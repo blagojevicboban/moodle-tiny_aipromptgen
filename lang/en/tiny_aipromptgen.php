@@ -22,5 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['aipromptgen:use'] = 'Use AI Prompt Generator';
+$string['buttontitle'] = 'AI Prompt Generator';
 $string['pluginname'] = 'AI Prompt Generator';
-$string['aipromptgen:view'] = 'Use AI Prompt Generator';

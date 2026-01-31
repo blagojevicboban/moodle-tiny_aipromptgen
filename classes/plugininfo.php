@@ -29,13 +29,10 @@ use editor_tiny\plugin_with_buttons;
 use editor_tiny\plugin_with_configuration;
 use editor_tiny\plugin_with_menuitems;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Tiny AI Prompt Generator plugin.
  */
-class plugininfo extends plugin implements plugin_with_buttons, plugin_with_menuitems, plugin_with_configuration {
-
+class plugininfo extends plugin implements plugin_with_buttons, plugin_with_configuration, plugin_with_menuitems {
     /**
      * Get the list of buttons provided by this plugin.
      *
@@ -43,7 +40,7 @@ class plugininfo extends plugin implements plugin_with_buttons, plugin_with_menu
      */
     public static function get_available_buttons(): array {
         return [
-            'tiny_aipromptgen/aipromptgen',
+            'tiny_aipromptgen/tiny_aipromptgen',
         ];
     }
 
@@ -54,7 +51,7 @@ class plugininfo extends plugin implements plugin_with_buttons, plugin_with_menu
      */
     public static function get_available_menuitems(): array {
         return [
-            'tiny_aipromptgen/aipromptgen',
+            'tiny_aipromptgen/tiny_aipromptgen',
         ];
     }
 
@@ -67,10 +64,15 @@ class plugininfo extends plugin implements plugin_with_buttons, plugin_with_menu
      * @param \editor_tiny\editor $editor The editor instance.
      * @return array
      */
-    public static function get_plugin_configuration_for_context(\context $context, array $options, array $fpoptions, ?\editor_tiny\editor $editor = null): array {
+    public static function get_plugin_configuration_for_context(
+        \context $context,
+        array $options,
+        array $fpoptions,
+        ?\editor_tiny\editor $editor = null
+    ): array {
         global $PAGE;
 
-        // Configuration logic here
+        // Configuration logic here.
         $systemcontext = \context_system::instance();
 
         return [
