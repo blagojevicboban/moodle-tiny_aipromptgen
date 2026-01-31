@@ -7,8 +7,8 @@ import {
 export const configure = (instanceConfig) => {
     // Update the instance configuration to add the AI Prompt Generator menu option to the menus and toolbars.
     // Button name must match what is registered in plugin.js
-    const buttonName = 'tiny_aipromptgen'; 
-    
+    const buttonName = 'tiny_aipromptgen';
+
     return {
         toolbar: addToolbarButton(instanceConfig.toolbar, 'content', buttonName),
         menu: addMenubarItem(instanceConfig.menu, 'insert', buttonName),

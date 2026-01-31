@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Access capabilities for the tiny_aipromptgen plugin.
+ * Capability definitions for the AI Prompt Generator plugin.
  *
  * @package    tiny_aipromptgen
  * @copyright  2025 AI4Teachers
@@ -27,9 +27,11 @@ defined('MOODLE_INTERNAL') || die();
 $capabilities = [
     'tiny/aipromptgen:use' => [
         'captype' => 'read',
-        'contextlevel' => CONTEXT_SYSTEM,
+        'contextlevel' => CONTEXT_COURSE,
         'archetypes' => [
-            'user' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW,
         ],
     ],
 ];
