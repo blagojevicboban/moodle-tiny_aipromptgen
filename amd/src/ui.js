@@ -144,6 +144,9 @@ define([], function() {
                             return;
                         }
 
+                        // For non-streaming providers, show loading state.
+                        sendBtn.disabled = true;
+                        sendBtn.textContent = 'Generating...';
                         hidden.value = provider;
                         if (form) {
                             form.submit();
@@ -317,16 +320,17 @@ define([], function() {
                 var handleInsert = function(refs) {
                     var content = '';
                     if (refs.bodyHtml && refs.bodyHtml.style.display !== 'none') {
-                         content = refs.bodyHtml.innerHTML;
+                        content = refs.bodyHtml.innerHTML;
                     } else if (refs.bodyCode && refs.bodyCode.style.display !== 'none') {
-                         content = refs.bodyCode.textContent;
+                        content = refs.bodyCode.textContent;
                     } else if (refs.bodyText && refs.bodyText.style.display !== 'none') {
-                         // Wrap text in paragraphs if it looks like plain text
-                         content = refs.bodyText.textContent.split('\n\n').map(function(p) {
-                             return '<p>' + p + '</p>';
-                         }).join('');
+                        // Convert newlines to paragraphs for plain text view.
+                        content = refs.bodyText.textContent.trim().split(/\n+/).map(function(p) {
+                            return '<p>' + p.trim() + '</p>';
+                        }).join('');
                     } else if (refs.bodyRaw && refs.bodyRaw.style.display !== 'none') {
-                         content = refs.bodyRaw.textContent;
+                        // Convert newlines to breaks for raw view.
+                        content = refs.bodyRaw.textContent.replace(/\n/g, '<br>');
                     }
 
                     if (window.opener && window.opener.tinyMCE && window.opener.tinyMCE.activeEditor) {

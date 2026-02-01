@@ -11,6 +11,13 @@ define(['tiny_aipromptgen/markdown'], function(Markdown) {
                 resp.parentNode.insertBefore(statusEl, resp);
             }
         }
+
+        const modalStatus = document.getElementById('ai4t-modal-status');
+        if (modalStatus) {
+            modalStatus.textContent = 'Connecting...';
+            modalStatus.style.color = '#007bff';
+        }
+
         if (statusEl) {
             statusEl.textContent = 'Streaming...';
         }
@@ -31,9 +38,14 @@ define(['tiny_aipromptgen/markdown'], function(Markdown) {
 
     const attachStreamListeners = function(es, resp, statusEl, scrollToResponse) {
         let first = true;
+        const modalStatus = document.getElementById('ai4t-modal-status');
+
         es.addEventListener('start', function() {
             if (statusEl) {
                 statusEl.textContent = 'Started';
+            }
+            if (modalStatus) {
+                modalStatus.textContent = 'Receiving...';
             }
             scrollToResponse();
         });
@@ -45,6 +57,9 @@ define(['tiny_aipromptgen/markdown'], function(Markdown) {
                     first = false;
                 }
             }
+            if (modalStatus) {
+                modalStatus.textContent = 'Receiving...';
+            }
         });
         es.addEventListener('error', function(ev) {
             if (resp) {
@@ -53,11 +68,19 @@ define(['tiny_aipromptgen/markdown'], function(Markdown) {
             if (statusEl) {
                 statusEl.textContent = 'Error';
             }
+            if (modalStatus) {
+                modalStatus.textContent = 'Error occurred';
+                modalStatus.style.color = '#dc3545';
+            }
             scrollToResponse();
         });
         es.addEventListener('done', function() {
             if (statusEl) {
                 statusEl.textContent = 'Done';
+            }
+            if (modalStatus) {
+                modalStatus.textContent = 'Finished';
+                modalStatus.style.color = '#28a745';
             }
             if (resp) {
                 resp.removeAttribute('aria-busy');

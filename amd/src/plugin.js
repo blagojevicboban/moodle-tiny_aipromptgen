@@ -52,39 +52,61 @@ export default Promise.all([
             var topic = '';
             var lesson = '';
 
-            // 1. Activity Name (standard Moodle form field 'name')
-            var nameInput = document.querySelector('input[name="name"]') || document.getElementById('id_name');
-            if (nameInput) {
-                lesson = nameInput.value;
-            }
-
-            // 2. Section/Topic Name (standard Moodle section edit field)
-            // 2. Section/Topic Name
-            var sectionInput = document.getElementById('id_name_value');
-            if (sectionInput) {
-                topic = sectionInput.value;
+            if (window.location.href.indexOf('editsection.php') !== -1 || window.location.href.indexOf('section.php') !== -1) {
+                // Editing a section: 'id_name' is the topic name.
+                var topicInput = document.getElementById('id_name') || document.querySelector('input[name="name"]');
+                if (topicInput) {
+                    topic = topicInput.value;
+                }
             } else {
-                // Fallback: Try to find section name from breadcrumbs or page structure
-                // Common in Moodle: Breadcrumbs can hold the section name
-                var breadcrumbs = document.querySelectorAll('.breadcrumb-item');
-                if (breadcrumbs.length > 1) {
-                    // Usually: Home > Course > Section > Activity
-                    // If editing activity, Section is usually 2nd to last.
-                    // If editing section, it might be the last one (but text might be 'Edit...').
-                    // Let's try to get the text of the link in the breadcrumb before the last one?
-                    // Or just grab the course shortname if nothing else?
-                    // Better: look for a section header on the page if visible.
+                // Editing an activity or other content: 'id_name' is the lesson title.
+                var nameInput = document.querySelector('input[name="name"]') || document.getElementById('id_name');
+                if (nameInput) {
+                    lesson = nameInput.value;
+                }
 
-                    // Simple logic: If we are in modedit, topic might not be editable.
-                    // Let's try to grab it from the page header if valid? No.
-
-                    // Let's just leave it empty if input not found, BUT check one more ID:
-                    var sectionName = document.querySelector('.sectionname');
-                    if (sectionName) {
-                        topic = sectionName.innerText.trim();
+                // Try to find section (Topic) name.
+                var sectionInput = document.getElementById('id_name_value') || document.getElementById('id_sectionname');
+                if (sectionInput && sectionInput.value) {
+                    topic = sectionInput.value;
+                } else {
+                    // Fallback to breadcrumbs.
+                    var breadcrumbs = document.querySelectorAll('.breadcrumb-item');
+                    if (breadcrumbs.length > 2) {
+                        // We want to find the first breadcrumb from the end that isn't
+                        // the current "lesson" (activity) name or "Edit" or common UI words.
+                        var skipList = ['settings', 'general', 'more', 'administration', 'courses', 'home', 'edit'];
+                        for (var i = breadcrumbs.length - 1; i >= 0; i--) {
+                            var text = breadcrumbs[i].textContent.trim();
+                            var lowerText = text.toLowerCase();
+                            var skip = false;
+                            for (var j = 0; j < skipList.length; j++) {
+                                if (lowerText.indexOf(skipList[j]) !== -1) {
+                                    skip = true;
+                                    break;
+                                }
+                            }
+                            if (text && text !== lesson && !skip) {
+                                topic = text;
+                                break;
+                            }
+                        }
+                    }
+                    if (!topic) {
+                        // Try finding element with class sectionname or similar.
+                        var sectionNameEl = document.querySelector('.sectionname') ||
+                                          document.querySelector('.page-header-headings h1') ||
+                                          document.querySelector('.course-section .section-name');
+                        if (sectionNameEl) {
+                            var stext = sectionNameEl.textContent.trim();
+                            if (stext !== lesson) {
+                                topic = stext;
+                            }
+                        }
                     }
                 }
             }
+
             // eslint-disable-next-line max-len
             var url = (window.M && window.M.cfg && window.M.cfg.wwwroot ? window.M.cfg.wwwroot : '') + '/lib/editor/tiny/plugins/aipromptgen/view.php?courseid=' + courseId + '&topic=' + encodeURIComponent(topic) + '&lesson=' + encodeURIComponent(lesson) + '&popup=1';
 
