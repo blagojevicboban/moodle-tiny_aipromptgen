@@ -61,7 +61,8 @@ class plugininfo extends plugin implements plugin_with_buttons, plugin_with_conf
      * @param \context $context The context that the editor is being used in.
      * @param array $options The options passed to the editor.
      * @param array $fpoptions The file picker options.
-     * @param \editor_tiny\editor $editor The editor instance.
+     * @param \editor_tiny\editor|null $editor The editor instance.
+     *
      * @return array
      */
     public static function get_plugin_configuration_for_context(

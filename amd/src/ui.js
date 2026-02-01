@@ -190,8 +190,6 @@ define([], function() {
                         // or legacy from the block view. We will simply do nothing here for now,
                         // as we are already in the correct view.
 
-
-
                     document.addEventListener('click', function(e) {
                         handleModalClick(e, modal, backdrop, {
                             bodyRaw: bodyRaw, bodyText: bodyText, bodyHtml: bodyHtml, bodyCode: bodyCode,
@@ -336,10 +334,10 @@ define([], function() {
                             window.opener.tinyMCE.activeEditor.insertContent(content);
                             window.close();
                         } catch (e) {
-                            alert('Failed to insert content. The editor window might be closed.');
+                            window.console.error('Failed to insert content. The editor window might be closed.');
                         }
                     } else {
-                        alert('Could not find the parent editor window.');
+                        window.console.error('Could not find the parent editor window.');
                     }
                 };
 

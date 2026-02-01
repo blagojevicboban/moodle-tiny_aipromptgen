@@ -44,6 +44,31 @@
     * audiences - array
     * classtypes - array
     * airesponse_initial - string
+
+    Example context (json):
+    {
+        "hasgenerated": true,
+        "generatedprompt": "I want a lesson plan for math.",
+        "courseid": 2,
+        "sesskey": "A1B2C3D4",
+        "backurl": "#",
+        "providersavailable": true,
+        "provideroptions": [
+            { "value": "openai", "label": "OpenAI", "selected": true }
+        ],
+        "lessonoptions": [
+            { "text": "Topic 1", "options": [{ "value": "1", "label": "Lesson 1" }] }
+        ],
+        "topics": ["Math", "Science"],
+        "competencies": ["Addition", "Subtraction"],
+        "languages": [
+            { "code": "en", "name": "English", "label": "English 🇺🇸" }
+        ],
+        "purposes": ["Lesson Plan"],
+        "audiences": ["Beginners"],
+        "classtypes": ["Lecture"],
+        "airesponse_initial": ""
+    }
 }}
 
 <!-- Generated Prompt Section -->

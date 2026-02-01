@@ -71,7 +71,6 @@ export default Promise.all([
                     // Usually: Home > Course > Section > Activity
                     // If editing activity, Section is usually 2nd to last.
                     // If editing section, it might be the last one (but text might be 'Edit...').
-                    
                     // Let's try to get the text of the link in the breadcrumb before the last one?
                     // Or just grab the course shortname if nothing else?
                     // Better: look for a section header on the page if visible.
