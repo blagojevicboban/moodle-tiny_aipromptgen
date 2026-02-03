@@ -118,16 +118,15 @@ if ($schema) {
     $body['format'] = $schema;
 }
 $payload = json_encode($body, JSON_UNESCAPED_UNICODE);
+require_once($CFG->libdir . '/filelib.php');
+$curl = new curl();
 
-$ch = curl_init($url);
-curl_setopt_array($ch, [
-    CURLOPT_POST => true,
-    CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-    CURLOPT_POSTFIELDS => $payload,
-    CURLOPT_RETURNTRANSFER => false, // Stream directly.
-    CURLOPT_FOLLOWLOCATION => true,
-    CURLOPT_TIMEOUT => $timeout,
-    CURLOPT_WRITEFUNCTION => function ($ch, $chunk) use (&$schema) {
+$options = [
+    'CURLOPT_HTTPHEADER' => ['Content-Type: application/json'],
+    'CURLOPT_RETURNTRANSFER' => false, // Stream directly via callback.
+    'CURLOPT_FOLLOWLOCATION' => true,
+    'CURLOPT_TIMEOUT' => $timeout,
+    'CURLOPT_WRITEFUNCTION' => function ($ch, $chunk) use (&$schema) {
         static $buffer = '';
         $buffer .= $chunk;
         // Split on newlines for NDJSON.
@@ -154,19 +153,18 @@ curl_setopt_array($ch, [
         }
         return strlen($chunk);
     },
-]);
+];
 
 // Bypass Moodle curl security for local/private endpoints.
 if (preg_match('~^https?://(localhost|127\.0\.0\.1|192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)~i', $url)) {
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    $options['CURLOPT_SSL_VERIFYPEER'] = false;
+    $options['CURLOPT_SSL_VERIFYHOST'] = 0;
 }
 
 send_event('Streaming start', 'start');
-$ok = curl_exec($ch);
-if ($ok === false) {
-    send_event('cURL error: ' . curl_error($ch), 'error');
+$curl->post($url, $payload, $options);
+if ($curl->error) {
+    send_event('cURL error: ' . $curl->error, 'error');
 }
-curl_close($ch);
 send_event('[DONE]', 'done');
 exit;
