@@ -51,7 +51,7 @@ define(['core/str'], function(Str) {
                     // Silent fail.
                 });
                 if (copied) {
-                    Str.get_string('form:copied', 'tiny_aipromptgen').then(function(s) {
+                    Str.get_string('form_copied', 'tiny_aipromptgen').then(function(s) {
                         copied.textContent = s;
                         copied.style.display = 'inline';
                         setTimeout(function() {

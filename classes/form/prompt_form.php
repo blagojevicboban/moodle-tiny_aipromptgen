@@ -54,7 +54,7 @@ class prompt_form extends \moodleform {
         $mform->addElement('header', 'aipromptgen_title', \get_string('pluginname', 'tiny_aipromptgen'));
         $mform->setExpanded('aipromptgen_title');
 
-        $mform->addElement('text', 'subject', \get_string('form:subjectlabel', 'tiny_aipromptgen'));
+        $mform->addElement('text', 'subject', \get_string('form_subjectlabel', 'tiny_aipromptgen'));
         $mform->setType('subject', PARAM_TEXT);
         // Set a default only if provided and not empty.
         if (is_string($subjectdefault)) {
@@ -68,7 +68,7 @@ class prompt_form extends \moodleform {
             'id' => 'id_subject',
             // Explicit name attribute for compatibility with custom JS selectors or validation.
             'name' => 'subject',
-            'title' => \get_string('help:subjectchange', 'tiny_aipromptgen'),
+            'title' => \get_string('help_subjectchange', 'tiny_aipromptgen'),
         ];
         if (is_string($coursename) && trim($coursename) !== '') {
             $subjectattrs['placeholder'] = \format_string($coursename);
@@ -81,16 +81,16 @@ class prompt_form extends \moodleform {
         $ageelems[] = $mform->createElement('text', 'agerange', '', [
             'id' => 'id_agerange',
             'size' => 20,
-            'title' => \get_string('help:agerange', 'tiny_aipromptgen'),
-            'placeholder' => \get_string('placeholder:agerange', 'tiny_aipromptgen'),
+            'title' => \get_string('help_agerange', 'tiny_aipromptgen'),
+            'placeholder' => \get_string('placeholder_agerange', 'tiny_aipromptgen'),
         ]);
-        $ageelems[] = $mform->createElement('button', 'agebrowse', \get_string('form:lessonbrowse', 'tiny_aipromptgen'), [
+        $ageelems[] = $mform->createElement('button', 'agebrowse', \get_string('form_lessonbrowse', 'tiny_aipromptgen'), [
             'type' => 'button',
             'id' => 'ai4t-age-browse',
             'class' => 'btn btn-secondary btn-sm',
-            'title' => \get_string('form:agebrowse', 'tiny_aipromptgen'),
+            'title' => \get_string('form_agebrowse', 'tiny_aipromptgen'),
         ]);
-        $mform->addGroup($ageelems, 'agegroup', \get_string('form:agerangelabel', 'tiny_aipromptgen'), ' ', false);
+        $mform->addGroup($ageelems, 'agegroup', \get_string('form_agerangelabel', 'tiny_aipromptgen'), ' ', false);
         $mform->setType('agerange', PARAM_TEXT);
         $mform->setDefault('agerange', '15');
 
@@ -102,15 +102,15 @@ class prompt_form extends \moodleform {
             'id' => 'id_topic',
             'size' => 60,
             'list' => 'ai4t-topiclist',
-            'title' => \get_string('help:topic', 'tiny_aipromptgen'),
+            'title' => \get_string('help_topic', 'tiny_aipromptgen'),
         ]);
-        $topicelems[] = $mform->createElement('button', 'topicbrowse', \get_string('form:topicbrowse', 'tiny_aipromptgen'), [
+        $topicelems[] = $mform->createElement('button', 'topicbrowse', \get_string('form_topicbrowse', 'tiny_aipromptgen'), [
             'type' => 'button',
             'id' => 'ai4t-topic-browse',
             'class' => 'btn btn-secondary btn-sm',
-            'title' => \get_string('form:topicbrowse', 'tiny_aipromptgen'),
+            'title' => \get_string('form_topicbrowse', 'tiny_aipromptgen'),
         ]);
-        $mform->addGroup($topicelems, 'topicgroup', \get_string('form:topiclabel', 'tiny_aipromptgen'), ' ', false);
+        $mform->addGroup($topicelems, 'topicgroup', \get_string('form_topiclabel', 'tiny_aipromptgen'), ' ', false);
         $mform->setType('topic', PARAM_TEXT);
         // Topic is optional; users can generate a prompt without selecting a topic.
         // Attach HTML5 datalist for suggestions while allowing free text.
@@ -128,15 +128,15 @@ class prompt_form extends \moodleform {
         $lessonelems[] = $mform->createElement('text', 'lesson', '', [
             'id' => 'id_lesson',
             'size' => 60,
-            'title' => \get_string('help:lesson', 'tiny_aipromptgen'),
+            'title' => \get_string('help_lesson', 'tiny_aipromptgen'),
         ]);
-        $lessonelems[] = $mform->createElement('button', 'lessonbrowse', \get_string('form:lessonbrowse', 'tiny_aipromptgen'), [
+        $lessonelems[] = $mform->createElement('button', 'lessonbrowse', \get_string('form_lessonbrowse', 'tiny_aipromptgen'), [
             'type' => 'button',
             'id' => 'ai4t-lesson-browse',
             'class' => 'btn btn-secondary btn-sm',
-            'title' => \get_string('help:lessonbrowse', 'tiny_aipromptgen'),
+            'title' => \get_string('help_lessonbrowse', 'tiny_aipromptgen'),
         ]);
-        $mform->addGroup($lessonelems, 'lessongroup', \get_string('form:lessonlabel', 'tiny_aipromptgen'), ' ', false);
+        $mform->addGroup($lessonelems, 'lessongroup', \get_string('form_lessonlabel', 'tiny_aipromptgen'), ' ', false);
         $mform->setType('lesson', PARAM_TEXT);
 
         // Class type: free text with a Browse button to open a modal picker.
@@ -144,30 +144,30 @@ class prompt_form extends \moodleform {
         $classgroupelems[] = $mform->createElement('text', 'classtype', '', [
             'id' => 'id_classtype',
             'size' => 40,
-            'title' => \get_string('help:classtype', 'tiny_aipromptgen'),
+            'title' => \get_string('help_classtype', 'tiny_aipromptgen'),
         ]);
         $classgroupelems[] = $mform->createElement(
             'button',
             'classtypebrowse',
-            get_string('form:lessonbrowse', 'tiny_aipromptgen'),
+            get_string('form_lessonbrowse', 'tiny_aipromptgen'),
             [
                 'type' => 'button',
                 'id' => 'ai4t-classtype-browse',
                 'class' => 'btn btn-secondary btn-sm',
-                'title' => \get_string('form:classtypebrowse', 'tiny_aipromptgen'),
+                'title' => \get_string('form_classtypebrowse', 'tiny_aipromptgen'),
             ]
         );
-        $mform->addGroup($classgroupelems, 'classtypegroup', get_string('form:class_typelabel', 'tiny_aipromptgen'), ' ', false);
+        $mform->addGroup($classgroupelems, 'classtypegroup', get_string('form_class_typelabel', 'tiny_aipromptgen'), ' ', false);
         $mform->setType('classtype', PARAM_TEXT);
 
         // Number of classes: HTML5 numeric spinner (min 1, step 1), default 1.
-        $mform->addElement('text', 'lessoncount', get_string('form:lessoncount', 'tiny_aipromptgen'), [
+        $mform->addElement('text', 'lessoncount', get_string('form_lessoncount', 'tiny_aipromptgen'), [
             'id' => 'id_lessoncount',
             'size' => 6,
             // QuickForm "text" may render as type="text"; we'll enforce type via updateAttributes and JS fallback.
             'min' => 1,
             'step' => 1,
-            'title' => get_string('form:lessoncount', 'tiny_aipromptgen'),
+            'title' => get_string('form_lessoncount', 'tiny_aipromptgen'),
             'inputmode' => 'numeric',
             'pattern' => '[0-9]*',
         ]);
@@ -181,7 +181,7 @@ class prompt_form extends \moodleform {
         $mform->addRule('lessoncount', get_string('err_numeric', 'form'), 'numeric', null, 'client');
 
         // Lesson duration: choose 45 or 60 minutes (default 45).
-        $mform->addElement('select', 'lessonduration', get_string('form:lessonduration', 'tiny_aipromptgen'), [
+        $mform->addElement('select', 'lessonduration', get_string('form_lessonduration', 'tiny_aipromptgen'), [
             45 => '45',
             60 => '60',
         ]);
@@ -193,20 +193,20 @@ class prompt_form extends \moodleform {
         $outcomeselems[] = $mform->createElement('textarea', 'outcomes', '', [
             'id' => 'id_outcomes',
             'wrap' => 'virtual', 'rows' => 6, 'cols' => 60,
-            'title' => \get_string('help:outcomes', 'tiny_aipromptgen'),
+            'title' => \get_string('help_outcomes', 'tiny_aipromptgen'),
         ]);
         $outcomeselems[] = $mform->createElement(
             'button',
             'outcomesbrowse',
-            get_string('form:outcomesbrowse', 'tiny_aipromptgen'),
+            get_string('form_outcomesbrowse', 'tiny_aipromptgen'),
             [
                 'type' => 'button',
                 'id' => 'ai4t-outcomes-browse',
                 'class' => 'btn btn-secondary btn-sm',
-                'title' => \get_string('help:outcomesbrowse', 'tiny_aipromptgen'),
+                'title' => \get_string('help_outcomesbrowse', 'tiny_aipromptgen'),
             ]
         );
-        $mform->addGroup($outcomeselems, 'outcomesgroup', get_string('form:outcomeslabel', 'tiny_aipromptgen'), ' ', false);
+        $mform->addGroup($outcomeselems, 'outcomesgroup', get_string('form_outcomeslabel', 'tiny_aipromptgen'), ' ', false);
         $mform->setType('outcomes', PARAM_TEXT);
 
         // Prompt language: text + Browse, plus hidden languagecode for precise mapping.
@@ -214,20 +214,20 @@ class prompt_form extends \moodleform {
         $langgroupelems[] = $mform->createElement('text', 'language', '', [
             'id' => 'id_language',
             'size' => 40,
-            'title' => \get_string('help:language', 'tiny_aipromptgen'),
+            'title' => \get_string('help_language', 'tiny_aipromptgen'),
         ]);
         $langgroupelems[] = $mform->createElement(
             'button',
             'languagebrowse',
-            get_string('form:lessonbrowse', 'tiny_aipromptgen'),
+            get_string('form_lessonbrowse', 'tiny_aipromptgen'),
             [
                 'type' => 'button',
                 'id' => 'ai4t-language-browse',
                 'class' => 'btn btn-secondary btn-sm',
-                'title' => \get_string('form:languagebrowse', 'tiny_aipromptgen'),
+                'title' => \get_string('form_languagebrowse', 'tiny_aipromptgen'),
             ]
         );
-        $mform->addGroup($langgroupelems, 'languagegroup', get_string('form:language', 'tiny_aipromptgen'), ' ', false);
+        $mform->addGroup($langgroupelems, 'languagegroup', get_string('form_language', 'tiny_aipromptgen'), ' ', false);
         $mform->setType('language', PARAM_TEXT);
         $mform->addElement('hidden', 'languagecode');
         $mform->setType('languagecode', PARAM_ALPHANUMEXT);
@@ -237,20 +237,20 @@ class prompt_form extends \moodleform {
         $purposeelems[] = $mform->createElement('text', 'purpose', '', [
             'id' => 'id_purpose',
             'size' => 40,
-            'title' => \get_string('help:purpose', 'tiny_aipromptgen'),
+            'title' => \get_string('help_purpose', 'tiny_aipromptgen'),
         ]);
         $purposeelems[] = $mform->createElement(
             'button',
             'purposebrowse',
-            get_string('form:lessonbrowse', 'tiny_aipromptgen'),
+            get_string('form_lessonbrowse', 'tiny_aipromptgen'),
             [
                 'type' => 'button',
                 'id' => 'ai4t-purpose-browse',
                 'class' => 'btn btn-secondary btn-sm',
-                'title' => \get_string('form:purposebrowse', 'tiny_aipromptgen'),
+                'title' => \get_string('form_purposebrowse', 'tiny_aipromptgen'),
             ]
         );
-        $mform->addGroup($purposeelems, 'purposegroup', get_string('form:purpose', 'tiny_aipromptgen'), ' ', false);
+        $mform->addGroup($purposeelems, 'purposegroup', get_string('form_purpose', 'tiny_aipromptgen'), ' ', false);
         $mform->setType('purpose', PARAM_TEXT);
 
         // Audience: text + Browse.
@@ -258,20 +258,20 @@ class prompt_form extends \moodleform {
         $audienceelems[] = $mform->createElement('text', 'audience', '', [
             'id' => 'id_audience',
             'size' => 40,
-            'title' => \get_string('help:audience', 'tiny_aipromptgen'),
+            'title' => \get_string('help_audience', 'tiny_aipromptgen'),
         ]);
         $audienceelems[] = $mform->createElement(
             'button',
             'audiencebrowse',
-            get_string('form:lessonbrowse', 'tiny_aipromptgen'),
+            get_string('form_lessonbrowse', 'tiny_aipromptgen'),
             [
                 'type' => 'button',
                 'id' => 'ai4t-audience-browse',
                 'class' => 'btn btn-secondary btn-sm',
-                'title' => \get_string('form:audiencebrowse', 'tiny_aipromptgen'),
+                'title' => \get_string('form_audiencebrowse', 'tiny_aipromptgen'),
             ]
         );
-        $mform->addGroup($audienceelems, 'audiencegroup', get_string('form:audience', 'tiny_aipromptgen'), ' ', false);
+        $mform->addGroup($audienceelems, 'audiencegroup', get_string('form_audience', 'tiny_aipromptgen'), ' ', false);
         $mform->setType('audience', PARAM_TEXT);
 
         $mform->addElement('hidden', 'courseid');

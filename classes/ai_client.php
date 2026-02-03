@@ -25,8 +25,7 @@ use curl;
  * @copyright  2025 AI4Teachers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class ai_client
-{
+class ai_client {
     /** @var string OpenAI API Key */
     private $openaikey;
 
@@ -74,7 +73,7 @@ class ai_client
      */
     private function send_to_openai(string $prompt): string {
         if (empty($this->openaikey)) {
-            return get_string('error:noapikey', 'tiny_aipromptgen');
+            return get_string('error_noapikey', 'tiny_aipromptgen');
         }
 
         $endpoint = 'https://api.openai.com/v1/chat/completions';
@@ -103,7 +102,7 @@ class ai_client
      */
     private function send_to_ollama(string $prompt): string {
         if (empty($this->ollamaendpoint)) {
-            return get_string('error:noendpoint', 'tiny_aipromptgen');
+            return get_string('error_noendpoint', 'tiny_aipromptgen');
         }
 
         $endpoint = rtrim($this->ollamaendpoint, '/') . '/api/generate';

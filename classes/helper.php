@@ -35,8 +35,7 @@ use stdClass;
  * @copyright  2025 AI4Teachers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class helper
-{
+class helper {
     /**
      * Get list of formatted competencies and outcomes for a course.
      *

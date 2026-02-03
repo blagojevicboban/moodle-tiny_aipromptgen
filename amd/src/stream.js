@@ -51,12 +51,12 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
 
         const modalStatus = document.getElementById('ai4t-modal-status');
         if (modalStatus) {
-            updateElText(modalStatus, 'status:connecting');
+            updateElText(modalStatus, 'status_connecting');
             modalStatus.style.color = '#007bff';
         }
 
         if (statusEl) {
-            updateElText(statusEl, 'status:streaming');
+            updateElText(statusEl, 'status_streaming');
         }
         const modal = document.getElementById('ai4t-airesponse-modal');
         const backdrop = document.getElementById('ai4t-modal-backdrop');
@@ -78,8 +78,8 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
         const modalStatus = document.getElementById('ai4t-modal-status');
 
         es.addEventListener('start', function() {
-            updateElText(statusEl, 'status:started');
-            updateElText(modalStatus, 'status:receiving');
+            updateElText(statusEl, 'status_started');
+            updateElText(modalStatus, 'status_receiving');
             scrollToResponse();
         });
         es.addEventListener('chunk', function(ev) {
@@ -90,28 +90,28 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
                     first = false;
                 }
             }
-            updateElText(modalStatus, 'status:receiving');
+            updateElText(modalStatus, 'status_receiving');
         });
         es.addEventListener('error', function(ev) {
             if (resp) {
-                Str.get_string('status:error', 'tiny_aipromptgen').then(function(s) {
+                Str.get_string('status_error', 'tiny_aipromptgen').then(function(s) {
                     resp.textContent += '\n[' + s + '] ' + (ev.data || '');
                     return s;
                 }).catch(function() {
                     resp.textContent += '\n[Error] ' + (ev.data || '');
                 });
             }
-            updateElText(statusEl, 'status:error');
+            updateElText(statusEl, 'status_error');
             if (modalStatus) {
-                updateElText(modalStatus, 'status:error_occurred');
+                updateElText(modalStatus, 'status_error_occurred');
                 modalStatus.style.color = '#dc3545';
             }
             scrollToResponse();
         });
         es.addEventListener('done', function() {
-            updateElText(statusEl, 'status:done');
+            updateElText(statusEl, 'status_done');
             if (modalStatus) {
-                updateElText(modalStatus, 'status:finished');
+                updateElText(modalStatus, 'status_finished');
                 modalStatus.style.color = '#28a745';
             }
             if (resp) {
@@ -157,7 +157,7 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
         const timeoutMs = 30000; // 30s timeout
         const checkTimeout = setInterval(function() {
             if (Date.now() - lastActivity > timeoutMs) {
-                updateElText(statusEl, 'status:timeout');
+                updateElText(statusEl, 'status_timeout');
                 if (resp) {
                     resp.removeAttribute('aria-busy');
                 }

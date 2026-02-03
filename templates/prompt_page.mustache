@@ -74,18 +74,18 @@
 <!-- Generated Prompt Section -->
 {{#hasgenerated}}
 <div class="ai4t-generated-wrapper" id="ai4t-generated-wrapper" style="margin-top:24px;">
-    <h3>{{#str}}form:result, tiny_aipromptgen{{/str}}</h3>
+    <h3>{{#str}} form_result, tiny_aipromptgen{{/str}}</h3>
     
     <form method="post" action="view.php" id="ai4t-send-form">
         <input type="hidden" name="courseid" value="{{courseid}}">
         <input type="hidden" name="sesskey" value="{{sesskey}}">
         <input type="hidden" name="sendto" id="ai4t-sendto">
         
-        <textarea id="ai4t-generated" name="ai4t_generated" rows="12" class="form-control" style="width:100%;" title="{{#str}}tooltip:editprompt, tiny_aipromptgen{{/str}}">{{generatedprompt}}</textarea>
+        <textarea id="ai4t-generated" name="ai4t_generated" rows="12" class="form-control" style="width:100%;" title="{{#str}} tooltip_editprompt, tiny_aipromptgen{{/str}}">{{generatedprompt}}</textarea>
         <br>
         
         <div class="ai4t-actions">
-            <button type="button" id="ai4t-copy" class="btn btn-secondary">{{#str}}form:copy, tiny_aipromptgen{{/str}}</button>
+            <button type="button" id="ai4t-copy" class="btn btn-secondary">{{#str}} form_copy, tiny_aipromptgen{{/str}}</button>
             
             <select id="ai4t-provider" class="custom-select" style="width:auto;display:inline-block;margin-left:12px;">
                 {{#provideroptions}}
@@ -93,8 +93,8 @@
                 {{/provideroptions}}
             </select>
     
-            <button type="button" id="ai4t-sendtoai" class="btn btn-primary" style="margin-left:8px;" {{^providersavailable}}disabled title="{{#str}}tooltip:provider_not_configured, tiny_aipromptgen{{/str}}"{{/providersavailable}}>
-                {{#str}}form:sendtoai, tiny_aipromptgen{{/str}}
+            <button type="button" id="ai4t-sendtoai" class="btn btn-primary" style="margin-left:8px;" {{^providersavailable}}disabled title="{{#str}} tooltip_provider_not_configured, tiny_aipromptgen{{/str}}"{{/providersavailable}}>
+                {{#str}} form_sendtoai, tiny_aipromptgen{{/str}}
             </button>
             
             <span id="ai4t-copied" style="margin-left:8px;display:none;"></span>
@@ -113,24 +113,24 @@
 <!-- Age Modal -->
 <div class="ai4t-modal" id="ai4t-age-modal" role="dialog" aria-modal="true" aria-labelledby="ai4t-age-modal-title" style="display:none;">
     <header>
-        <h3 id="ai4t-age-modal-title">{{#str}}form:agerangelabel, tiny_aipromptgen{{/str}}</h3>
+        <h3 id="ai4t-age-modal-title">{{#str}} form_agerangelabel, tiny_aipromptgen{{/str}}</h3>
         <button type="button" id="ai4t-age-modal-close" class="btn btn-link" aria-label="{{#str}}cancel{{/str}}">&times;</button>
     </header>
     <div class="ai4t-body">
         <div class="mb-2">
             <div style="display:flex;align-items:center;gap:8px;">
                 <input type="radio" name="ai4t-age-mode" id="ai4t-age-mode-exact" value="exact" checked>
-                <label for="ai4t-age-mode-exact" class="mb-0">{{#str}}form:ageexact, tiny_aipromptgen{{/str}}</label>
-                <input type="number" id="ai4t-age-exact" min="1" max="120" step="1" style="width:100px;" class="form-control d-inline" aria-label="{{#str}}label:ageexact_aria, tiny_aipromptgen{{/str}}">
+                <label for="ai4t-age-mode-exact" class="mb-0">{{#str}} form_ageexact, tiny_aipromptgen{{/str}}</label>
+                <input type="number" id="ai4t-age-exact" min="1" max="120" step="1" style="width:100px;" class="form-control d-inline" aria-label="{{#str}} label_ageexact_aria, tiny_aipromptgen{{/str}}">
             </div>
         </div>
         <div>
             <div style="display:flex;align-items:center;gap:8px;">
                 <input type="radio" name="ai4t-age-mode" id="ai4t-age-mode-range" value="range">
-                <label for="ai4t-age-mode-range" class="mb-0">{{#str}}form:agerange_option, tiny_aipromptgen{{/str}}</label>
-                <input type="number" id="ai4t-age-from" min="1" max="120" step="1" style="width:100px;" class="form-control d-inline" disabled aria-label="{{#str}}label:agerange_from_aria, tiny_aipromptgen{{/str}}">
+                <label for="ai4t-age-mode-range" class="mb-0">{{#str}} form_agerange_option, tiny_aipromptgen{{/str}}</label>
+                <input type="number" id="ai4t-age-from" min="1" max="120" step="1" style="width:100px;" class="form-control d-inline" disabled aria-label="{{#str}} label_agerange_from_aria, tiny_aipromptgen{{/str}}">
                 <span>–</span>
-                <input type="number" id="ai4t-age-to" min="1" max="120" step="1" style="width:100px;" class="form-control d-inline" disabled aria-label="{{#str}}label:agerange_to_aria, tiny_aipromptgen{{/str}}">
+                <input type="number" id="ai4t-age-to" min="1" max="120" step="1" style="width:100px;" class="form-control d-inline" disabled aria-label="{{#str}} label_agerange_to_aria, tiny_aipromptgen{{/str}}">
             </div>
         </div>
     </div>
@@ -143,7 +143,7 @@
 <!-- Lesson Modal (Course Modules) -->
 <div class="ai4t-modal" id="ai4t-modal" role="dialog" aria-modal="true" aria-labelledby="ai4t-modal-title" style="display:none;">
     <header>
-        <h3 id="ai4t-modal-title">{{#str}}form:lessonlabel, tiny_aipromptgen{{/str}}</h3>
+        <h3 id="ai4t-modal-title">{{#str}} form_lessonlabel, tiny_aipromptgen{{/str}}</h3>
         <button type="button" id="ai4t-modal-close" class="btn btn-link" aria-label="{{#str}}cancel{{/str}}">&times;</button>
     </header>
     <div class="ai4t-body">
@@ -164,7 +164,7 @@
 <!-- Topic Modal (Course Sections) -->
 <div class="ai4t-modal" id="ai4t-topic-modal" role="dialog" aria-modal="true" aria-labelledby="ai4t-topic-modal-title" style="display:none;">
     <header>
-        <h3 id="ai4t-topic-modal-title">{{#str}}form:topiclabel, tiny_aipromptgen{{/str}}</h3>
+        <h3 id="ai4t-topic-modal-title">{{#str}} form_topiclabel, tiny_aipromptgen{{/str}}</h3>
         <button type="button" id="ai4t-topic-modal-close" class="btn btn-link" aria-label="{{#str}}cancel{{/str}}">&times;</button>
     </header>
     <div class="ai4t-body">
@@ -182,7 +182,7 @@
 <!-- Outcomes Modal -->
 <div class="ai4t-modal" id="ai4t-outcomes-modal" role="dialog" aria-modal="true" aria-labelledby="ai4t-outcomes-modal-title" style="display:none;">
     <header>
-        <h3 id="ai4t-outcomes-modal-title">{{#str}}form:outcomeslabel, tiny_aipromptgen{{/str}}</h3>
+        <h3 id="ai4t-outcomes-modal-title">{{#str}} form_outcomeslabel, tiny_aipromptgen{{/str}}</h3>
         <button type="button" id="ai4t-outcomes-modal-close" class="btn btn-link" aria-label="{{#str}}cancel{{/str}}">&times;</button>
     </header>
     <div class="ai4t-body">
@@ -209,7 +209,7 @@
 <!-- Language Modal -->
 <div class="ai4t-modal" id="ai4t-language-modal" role="dialog" aria-modal="true" aria-labelledby="ai4t-language-modal-title" style="display:none;">
     <header>
-        <h3 id="ai4t-language-modal-title">{{#str}}form:language, tiny_aipromptgen{{/str}}</h3>
+        <h3 id="ai4t-language-modal-title">{{#str}} form_language, tiny_aipromptgen{{/str}}</h3>
         <button type="button" id="ai4t-language-modal-close" class="btn btn-link" aria-label="{{#str}}cancel{{/str}}">&times;</button>
     </header>
     <div class="ai4t-body">
@@ -227,7 +227,7 @@
 <!-- Purpose Modal -->
 <div class="ai4t-modal" id="ai4t-purpose-modal" role="dialog" aria-modal="true" aria-labelledby="ai4t-purpose-modal-title" style="display:none;">
     <header>
-        <h3 id="ai4t-purpose-modal-title">{{#str}}form:purpose, tiny_aipromptgen{{/str}}</h3>
+        <h3 id="ai4t-purpose-modal-title">{{#str}} form_purpose, tiny_aipromptgen{{/str}}</h3>
         <button type="button" id="ai4t-purpose-modal-close" class="btn btn-link" aria-label="{{#str}}cancel{{/str}}">&times;</button>
     </header>
     <div class="ai4t-body">
@@ -245,7 +245,7 @@
 <!-- Audience Modal -->
 <div class="ai4t-modal" id="ai4t-audience-modal" role="dialog" aria-modal="true" aria-labelledby="ai4t-audience-modal-title" style="display:none;">
     <header>
-        <h3 id="ai4t-audience-modal-title">{{#str}}form:audience, tiny_aipromptgen{{/str}}</h3>
+        <h3 id="ai4t-audience-modal-title">{{#str}} form_audience, tiny_aipromptgen{{/str}}</h3>
         <button type="button" id="ai4t-audience-modal-close" class="btn btn-link" aria-label="{{#str}}cancel{{/str}}">&times;</button>
     </header>
     <div class="ai4t-body">
@@ -263,7 +263,7 @@
 <!-- Class Type Modal -->
 <div class="ai4t-modal" id="ai4t-classtype-modal" role="dialog" aria-modal="true" aria-labelledby="ai4t-classtype-modal-title" style="display:none;">
     <header>
-        <h3 id="ai4t-classtype-modal-title">{{#str}}form:class_typelabel, tiny_aipromptgen{{/str}}</h3>
+        <h3 id="ai4t-classtype-modal-title">{{#str}} form_class_typelabel, tiny_aipromptgen{{/str}}</h3>
         <button type="button" id="ai4t-classtype-modal-close" class="btn btn-link" aria-label="{{#str}}cancel{{/str}}">&times;</button>
     </header>
     <div class="ai4t-body">
@@ -281,7 +281,7 @@
 <!-- AI Response Modal -->
 <div class="ai4t-modal" id="ai4t-airesponse-modal" role="dialog" aria-modal="true" aria-labelledby="ai4t-airesponse-modal-title" style="display:none;">
     <header>
-        <h3 id="ai4t-airesponse-modal-title" style="display:inline-block;">{{#str}}form:response, tiny_aipromptgen{{/str}}</h3>
+        <h3 id="ai4t-airesponse-modal-title" style="display:inline-block;">{{#str}} form_response, tiny_aipromptgen{{/str}}</h3>
         <span id="ai4t-modal-status" style="margin-left:12px;font-style:italic;color:#666;font-size:0.9em;"></span>
         <button type="button" id="ai4t-airesponse-modal-close" class="btn btn-link" aria-label="{{#str}}cancel{{/str}}">&times;</button>
     </header>
@@ -292,21 +292,21 @@
         <pre id="ai4t-airesponse-code" class="form-control" style="display:none;padding:12px;max-height:45vh;overflow:auto;background:#fff;font-family:monospace;white-space:pre-wrap;"></pre>
     </div>
     <footer>
-        <button type="button" class="btn btn-secondary ai4t-view-btn" id="ai4t-btn-raw" style="margin-right:4px;">{{#str}}view:raw, tiny_aipromptgen{{/str}}</button>
-        <button type="button" class="btn btn-outline-secondary ai4t-view-btn" id="ai4t-btn-text" style="margin-right:4px;">{{#str}}view:text, tiny_aipromptgen{{/str}}</button>
-        <button type="button" class="btn btn-outline-secondary ai4t-view-btn" id="ai4t-btn-rich" style="margin-right:4px;">{{#str}}view:html, tiny_aipromptgen{{/str}}</button>
-        <button type="button" class="btn btn-outline-secondary ai4t-view-btn" id="ai4t-btn-html" style="margin-right:12px;">{{#str}}view:htmlcode, tiny_aipromptgen{{/str}}</button>
-        <span id="ai4t-modal-copy-status" style="display:none;margin-right:12px;color:#28a745;font-weight:bold;font-size:0.9em;">{{#str}}form:copied, tiny_aipromptgen{{/str}}</span>
+        <button type="button" class="btn btn-secondary ai4t-view-btn" id="ai4t-btn-raw" style="margin-right:4px;">{{#str}} view_raw, tiny_aipromptgen{{/str}}</button>
+        <button type="button" class="btn btn-outline-secondary ai4t-view-btn" id="ai4t-btn-text" style="margin-right:4px;">{{#str}} view_text, tiny_aipromptgen{{/str}}</button>
+        <button type="button" class="btn btn-outline-secondary ai4t-view-btn" id="ai4t-btn-rich" style="margin-right:4px;">{{#str}} view_html, tiny_aipromptgen{{/str}}</button>
+        <button type="button" class="btn btn-outline-secondary ai4t-view-btn" id="ai4t-btn-html" style="margin-right:12px;">{{#str}} view_htmlcode, tiny_aipromptgen{{/str}}</button>
+        <span id="ai4t-modal-copy-status" style="display:none;margin-right:12px;color:#28a745;font-weight:bold;font-size:0.9em;">{{#str}} form_copied, tiny_aipromptgen{{/str}}</span>
 
         <button type="button" class="btn btn-primary" id="ai4t-airesponse-modal-insert-btn" style="margin-right:8px;">{{#str}}add{{/str}}</button>
-        <button type="button" class="btn btn-secondary" id="ai4t-airesponse-modal-copy-btn" style="margin-right:8px;">{{#str}}form:copy, tiny_aipromptgen{{/str}}</button>
+        <button type="button" class="btn btn-secondary" id="ai4t-airesponse-modal-copy-btn" style="margin-right:8px;">{{#str}} form_copy, tiny_aipromptgen{{/str}}</button>
         <button type="button" class="btn btn-secondary" id="ai4t-airesponse-modal-close-btn">{{#str}}cancel{{/str}}</button>
     </footer>
     <!-- Hidden element for accessibility heading of response -->
-    <h4 id="ai4t-response-heading" style="display:none;">{{#str}}form:response_heading, tiny_aipromptgen{{/str}}</h4>
+    <h4 id="ai4t-response-heading" style="display:none;">{{#str}} form_response_heading, tiny_aipromptgen{{/str}}</h4>
 </div>
 
 <!-- Back Button -->
 <div class="mt-3">
-    <a href="{{backurl}}" class="btn btn-secondary">{{#str}}form:backtocourse, tiny_aipromptgen{{/str}}</a>
+    <a href="{{backurl}}" class="btn btn-secondary">{{#str}} form_backtocourse, tiny_aipromptgen{{/str}}</a>
 </div>

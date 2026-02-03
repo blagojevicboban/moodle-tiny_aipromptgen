@@ -199,7 +199,7 @@ define(['core/str'], function(Str) {
                         }
 
                         sendBtn.disabled = true;
-                        Str.get_string('status:generating', 'tiny_aipromptgen').then(function(s) {
+                        Str.get_string('status_generating', 'tiny_aipromptgen').then(function(s) {
                             sendBtn.textContent = s;
                             return s;
                         }).catch(function() {
@@ -284,7 +284,7 @@ define(['core/str'], function(Str) {
                         try {
                             bodyHtml.innerHTML = Markdown.renderMarkdown(bodyRaw.textContent);
                         } catch (e) {
-                            Str.get_string('status:error_rendering_markdown', 'tiny_aipromptgen').then(function(s) {
+                            Str.get_string('status_error_rendering_markdown', 'tiny_aipromptgen').then(function(s) {
                                 bodyHtml.innerHTML = '<p>' + s + '</p>';
                                 return s;
                             }).catch(function() {
@@ -328,9 +328,9 @@ define(['core/str'], function(Str) {
                 var handleCopy = function(refs) {
                     if (refs.bodyHtml && refs.bodyHtml.style.display !== 'none') {
                         if (refs.copyRichText(refs.bodyHtml)) {
-                            showStatusById('status:copiedrichtext');
+                            showStatusById('status_copiedrichtext');
                         } else {
-                            showStatusById('status:copyfailed');
+                            showStatusById('status_copyfailed');
                         }
                     } else {
                         var text = '';
@@ -344,7 +344,7 @@ define(['core/str'], function(Str) {
 
                         if (navigator.clipboard && navigator.clipboard.writeText) {
                             navigator.clipboard.writeText(text).then(function() {
-                                showStatusById('status:copiedclipboard');
+                                showStatusById('status_copiedclipboard');
                                 return;
                             }).catch(function() {
                                 // Silent fail.
@@ -356,7 +356,7 @@ define(['core/str'], function(Str) {
                             ta.select();
                             document.execCommand('copy');
                             document.body.removeChild(ta);
-                            showStatusById('form:copied');
+                            showStatusById('form_copied');
                         }
                     }
                 };
