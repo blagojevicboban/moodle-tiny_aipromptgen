@@ -120,17 +120,17 @@
         <div class="mb-2">
             <div style="display:flex;align-items:center;gap:8px;">
                 <input type="radio" name="ai4t-age-mode" id="ai4t-age-mode-exact" value="exact" checked>
-                <label for="ai4t-age-mode-exact" class="mb-0">Exact age</label>
-                <input type="number" id="ai4t-age-exact" min="1" max="120" step="1" style="width:100px;" class="form-control d-inline" aria-label="Exact age value">
+                <label for="ai4t-age-mode-exact" class="mb-0">{{#str}}form:ageexact, tiny_aipromptgen{{/str}}</label>
+                <input type="number" id="ai4t-age-exact" min="1" max="120" step="1" style="width:100px;" class="form-control d-inline" aria-label="{{#str}}label:ageexact_aria, tiny_aipromptgen{{/str}}">
             </div>
         </div>
         <div>
             <div style="display:flex;align-items:center;gap:8px;">
                 <input type="radio" name="ai4t-age-mode" id="ai4t-age-mode-range" value="range">
-                <label for="ai4t-age-mode-range" class="mb-0">Age range</label>
-                <input type="number" id="ai4t-age-from" min="1" max="120" step="1" style="width:100px;" class="form-control d-inline" disabled aria-label="Age range from">
+                <label for="ai4t-age-mode-range" class="mb-0">{{#str}}form:agerange_option, tiny_aipromptgen{{/str}}</label>
+                <input type="number" id="ai4t-age-from" min="1" max="120" step="1" style="width:100px;" class="form-control d-inline" disabled aria-label="{{#str}}label:agerange_from_aria, tiny_aipromptgen{{/str}}">
                 <span>–</span>
-                <input type="number" id="ai4t-age-to" min="1" max="120" step="1" style="width:100px;" class="form-control d-inline" disabled aria-label="Age range to">
+                <input type="number" id="ai4t-age-to" min="1" max="120" step="1" style="width:100px;" class="form-control d-inline" disabled aria-label="{{#str}}label:agerange_to_aria, tiny_aipromptgen{{/str}}">
             </div>
         </div>
     </div>
@@ -296,14 +296,14 @@
         <button type="button" class="btn btn-outline-secondary ai4t-view-btn" id="ai4t-btn-text" style="margin-right:4px;">{{#str}}view:text, tiny_aipromptgen{{/str}}</button>
         <button type="button" class="btn btn-outline-secondary ai4t-view-btn" id="ai4t-btn-rich" style="margin-right:4px;">{{#str}}view:html, tiny_aipromptgen{{/str}}</button>
         <button type="button" class="btn btn-outline-secondary ai4t-view-btn" id="ai4t-btn-html" style="margin-right:12px;">{{#str}}view:htmlcode, tiny_aipromptgen{{/str}}</button>
-        <span id="ai4t-modal-copy-status" style="display:none;margin-right:12px;color:#28a745;font-weight:bold;font-size:0.9em;">Copied!</span>
+        <span id="ai4t-modal-copy-status" style="display:none;margin-right:12px;color:#28a745;font-weight:bold;font-size:0.9em;">{{#str}}form:copied, tiny_aipromptgen{{/str}}</span>
 
         <button type="button" class="btn btn-primary" id="ai4t-airesponse-modal-insert-btn" style="margin-right:8px;">{{#str}}add{{/str}}</button>
         <button type="button" class="btn btn-secondary" id="ai4t-airesponse-modal-copy-btn" style="margin-right:8px;">{{#str}}form:copy, tiny_aipromptgen{{/str}}</button>
         <button type="button" class="btn btn-secondary" id="ai4t-airesponse-modal-close-btn">{{#str}}cancel{{/str}}</button>
     </footer>
     <!-- Hidden element for accessibility heading of response -->
-    <h4 id="ai4t-response-heading" style="display:none;">Response</h4>
+    <h4 id="ai4t-response-heading" style="display:none;">{{#str}}form:response_heading, tiny_aipromptgen{{/str}}</h4>
 </div>
 
 <!-- Back Button -->

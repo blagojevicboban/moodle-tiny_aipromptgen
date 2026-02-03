@@ -23,7 +23,19 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define(['tiny_aipromptgen/markdown'], function(Markdown) {
+define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
+
+    const updateElText = function(el, stringId) {
+        if (!el) {
+            return;
+        }
+        Str.get_string(stringId, 'tiny_aipromptgen').then(function(s) {
+            el.textContent = s;
+            return s;
+        }).catch(function() {
+            // Silent fail.
+        });
+    };
 
     const setupStreamingUI = function(resp) {
         const statusId = 'ai-response-status';
@@ -39,12 +51,12 @@ define(['tiny_aipromptgen/markdown'], function(Markdown) {
 
         const modalStatus = document.getElementById('ai4t-modal-status');
         if (modalStatus) {
-            modalStatus.textContent = 'Connecting...';
+            updateElText(modalStatus, 'status:connecting');
             modalStatus.style.color = '#007bff';
         }
 
         if (statusEl) {
-            statusEl.textContent = 'Streaming...';
+            updateElText(statusEl, 'status:streaming');
         }
         const modal = document.getElementById('ai4t-airesponse-modal');
         const backdrop = document.getElementById('ai4t-modal-backdrop');
@@ -66,12 +78,8 @@ define(['tiny_aipromptgen/markdown'], function(Markdown) {
         const modalStatus = document.getElementById('ai4t-modal-status');
 
         es.addEventListener('start', function() {
-            if (statusEl) {
-                statusEl.textContent = 'Started';
-            }
-            if (modalStatus) {
-                modalStatus.textContent = 'Receiving...';
-            }
+            updateElText(statusEl, 'status:started');
+            updateElText(modalStatus, 'status:receiving');
             scrollToResponse();
         });
         es.addEventListener('chunk', function(ev) {
@@ -82,29 +90,28 @@ define(['tiny_aipromptgen/markdown'], function(Markdown) {
                     first = false;
                 }
             }
-            if (modalStatus) {
-                modalStatus.textContent = 'Receiving...';
-            }
+            updateElText(modalStatus, 'status:receiving');
         });
         es.addEventListener('error', function(ev) {
             if (resp) {
-                resp.textContent += '\n[Error] ' + (ev.data || '');
+                Str.get_string('status:error', 'tiny_aipromptgen').then(function(s) {
+                    resp.textContent += '\n[' + s + '] ' + (ev.data || '');
+                    return s;
+                }).catch(function() {
+                    resp.textContent += '\n[Error] ' + (ev.data || '');
+                });
             }
-            if (statusEl) {
-                statusEl.textContent = 'Error';
-            }
+            updateElText(statusEl, 'status:error');
             if (modalStatus) {
-                modalStatus.textContent = 'Error occurred';
+                updateElText(modalStatus, 'status:error_occurred');
                 modalStatus.style.color = '#dc3545';
             }
             scrollToResponse();
         });
         es.addEventListener('done', function() {
-            if (statusEl) {
-                statusEl.textContent = 'Done';
-            }
+            updateElText(statusEl, 'status:done');
             if (modalStatus) {
-                modalStatus.textContent = 'Finished';
+                updateElText(modalStatus, 'status:finished');
                 modalStatus.style.color = '#28a745';
             }
             if (resp) {
@@ -150,9 +157,7 @@ define(['tiny_aipromptgen/markdown'], function(Markdown) {
         const timeoutMs = 30000; // 30s timeout
         const checkTimeout = setInterval(function() {
             if (Date.now() - lastActivity > timeoutMs) {
-                if (statusEl) {
-                    statusEl.textContent = 'Timeout (incomplete)';
-                }
+                updateElText(statusEl, 'status:timeout');
                 if (resp) {
                     resp.removeAttribute('aria-busy');
                 }

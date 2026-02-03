@@ -23,7 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define([], function() {
+define(['core/str'], function(Str) {
     return {
         init: function() {
             require([
@@ -57,42 +57,75 @@ define([], function() {
                     var purpose = getValue('id_purpose');
                     var audience = getValue('id_audience');
                     var outcomes = getValue('id_outcomes');
-                    var language = getValue('id_language') || 'English';
+                    var language = getValue('id_language');
 
-                    var p = "You are an expert teacher. Create a detailed lesson plan.\n";
-                    p += "Subject: " + subject + "\n";
-                    if (age) {
-                        p += "Student Age: " + age + " years old\n";
-                    }
-                    if (topic) {
-                        p += "Topic: " + topic + "\n";
-                    }
-                    if (lesson) {
-                        p += "Lesson Title: " + lesson + "\n";
-                    }
-                    p += "Number of lessons: " + count + "\n";
-                    p += "Duration per lesson: " + duration + " minutes\n";
-                    if (classtype) {
-                        p += "Class Type: " + classtype + "\n";
-                    }
-                    if (purpose) {
-                        p += "Purpose: " + purpose + "\n";
-                    }
-                    if (audience) {
-                        p += "Target Audience: " + audience + "\n";
-                    }
-                    if (outcomes) {
-                        p += "Learning Outcomes/Competencies:\n" + outcomes + "\n";
-                    }
-                    p += "Language: " + language + "\n";
-                    p += "\nPlease provide a structured lesson plan with objectives, activities, and timeline.";
+                    Str.get_strings([
+                        {key: 'prompt:expert', component: 'tiny_aipromptgen'},
+                        {key: 'prompt:subject', component: 'tiny_aipromptgen', param: subject},
+                        {key: 'prompt:age', component: 'tiny_aipromptgen', param: age},
+                        {key: 'prompt:topic', component: 'tiny_aipromptgen', param: topic},
+                        {key: 'prompt:lesson_title', component: 'tiny_aipromptgen', param: lesson},
+                        {key: 'prompt:num_lessons', component: 'tiny_aipromptgen', param: count},
+                        {key: 'prompt:duration', component: 'tiny_aipromptgen', param: duration},
+                        {key: 'prompt:class_type', component: 'tiny_aipromptgen', param: classtype},
+                        {key: 'prompt:purpose', component: 'tiny_aipromptgen', param: purpose},
+                        {key: 'prompt:audience', component: 'tiny_aipromptgen', param: audience},
+                        {key: 'prompt:outcomes', component: 'tiny_aipromptgen'},
+                        {key: 'prompt:language', component: 'tiny_aipromptgen', param: language || ''},
+                        {key: 'prompt:footer', component: 'tiny_aipromptgen'},
+                        {key: 'default:language', component: 'tiny_aipromptgen'}
+                    ]).then(function(strings) {
+                        var sExpert = strings[0], sSubject = strings[1], sAge = strings[2],
+                            sTopic = strings[3], sLessonTitle = strings[4], sNumLessons = strings[5],
+                            sDuration = strings[6], sClassType = strings[7], sPurpose = strings[8],
+                            sAudience = strings[9], sOutcomes = strings[10], sLanguage = strings[11],
+                            sFooter = strings[12], sDefLang = strings[13];
 
-                    var gen = document.getElementById('ai4t-generated');
-                    if (gen) {
-                        gen.value = p;
-                        // Trigger input event to update valid state of buttons
-                        gen.dispatchEvent(new Event('input', {bubbles: true}));
-                    }
+                        var usedLang = language || sDefLang;
+                        if (!language) {
+                            // Re-fetch localized language string if we had to fall back.
+                            sLanguage = sLanguage.replace('{$a}', usedLang);
+                        }
+
+                        var p = sExpert + "\n";
+                        if (subject) {
+                            p += sSubject + "\n";
+                        }
+                        if (age) {
+                            p += sAge + "\n";
+                        }
+                        if (topic) {
+                            p += sTopic + "\n";
+                        }
+                        if (lesson) {
+                            p += sLessonTitle + "\n";
+                        }
+                        p += sNumLessons + "\n";
+                        p += sDuration + "\n";
+                        if (classtype) {
+                            p += sClassType + "\n";
+                        }
+                        if (purpose) {
+                            p += sPurpose + "\n";
+                        }
+                        if (audience) {
+                            p += sAudience + "\n";
+                        }
+                        if (outcomes) {
+                            p += sOutcomes + "\n" + outcomes + "\n";
+                        }
+                        p += sLanguage + "\n";
+                        p += "\n" + sFooter;
+
+                        var gen = document.getElementById('ai4t-generated');
+                        if (gen) {
+                            gen.value = p;
+                            gen.dispatchEvent(new Event('input', {bubbles: true}));
+                        }
+                        return p;
+                    }).catch(function() {
+                        // Fallback.
+                    });
                 };
 
                 var initAutoUpdate = function() {
@@ -110,12 +143,8 @@ define([], function() {
                         }
                     });
 
-                    // Initial update
-                    // We stick it in a timeout to ensure everything is rendered
                     setTimeout(updatePrompt, 500);
                 };
-
-                // Editor detection logic removed.
 
                 var initProviderSend = function() {
                     var sendBtn = document.getElementById('ai4t-sendtoai');
@@ -169,9 +198,14 @@ define([], function() {
                             return;
                         }
 
-                        // For non-streaming providers, show loading state.
                         sendBtn.disabled = true;
-                        sendBtn.textContent = 'Generating...';
+                        Str.get_string('status:generating', 'tiny_aipromptgen').then(function(s) {
+                            sendBtn.textContent = s;
+                            return s;
+                        }).catch(function() {
+                            sendBtn.textContent = 'Generating...';
+                        });
+
                         hidden.value = provider;
                         if (form) {
                             form.submit();
@@ -213,11 +247,6 @@ define([], function() {
                         applyView(view, btns, bodies, bodyRaw, bodyText, bodyCode, bodyHtml, Markdown);
                     };
 
-                        // Standalone mode: we are in a popup, and the user wants to "open" the prompt builder.
-                        // However, we ARE in the prompt builder. This event listener might be redundant
-                        // or legacy from the block view. We will simply do nothing here for now,
-                        // as we are already in the correct view.
-
                     document.addEventListener('click', function(e) {
                         handleModalClick(e, modal, backdrop, {
                             bodyRaw: bodyRaw, bodyText: bodyText, bodyHtml: bodyHtml, bodyCode: bodyCode,
@@ -231,7 +260,6 @@ define([], function() {
                             backdrop.style.display = 'block';
                         }
                         setView('rich');
-
                     }
                 };
 
@@ -256,7 +284,12 @@ define([], function() {
                         try {
                             bodyHtml.innerHTML = Markdown.renderMarkdown(bodyRaw.textContent);
                         } catch (e) {
-                            bodyHtml.innerHTML = '<p>Error rendering Markdown.</p>';
+                            Str.get_string('status:error_rendering_markdown', 'tiny_aipromptgen').then(function(s) {
+                                bodyHtml.innerHTML = '<p>' + s + '</p>';
+                                return s;
+                            }).catch(function() {
+                                bodyHtml.innerHTML = '<p>Error rendering Markdown.</p>';
+                            });
                         }
                     }
                 };
@@ -295,9 +328,9 @@ define([], function() {
                 var handleCopy = function(refs) {
                     if (refs.bodyHtml && refs.bodyHtml.style.display !== 'none') {
                         if (refs.copyRichText(refs.bodyHtml)) {
-                            refs.showStatus('Copied as Rich Text!');
+                            showStatusById('status:copiedrichtext');
                         } else {
-                            refs.showStatus('Copy failed');
+                            showStatusById('status:copyfailed');
                         }
                     } else {
                         var text = '';
@@ -311,22 +344,30 @@ define([], function() {
 
                         if (navigator.clipboard && navigator.clipboard.writeText) {
                             navigator.clipboard.writeText(text).then(function() {
-                                refs.showStatus('Copied to clipboard!');
+                                showStatusById('status:copiedclipboard');
                                 return;
                             }).catch(function() {
                                 // Silent fail.
                             });
                         } else {
-                            // Fallback
                             var ta = document.createElement('textarea');
                             ta.value = text;
                             document.body.appendChild(ta);
                             ta.select();
                             document.execCommand('copy');
                             document.body.removeChild(ta);
-                            refs.showStatus('Copied!');
+                            showStatusById('form:copied');
                         }
                     }
+                };
+
+                var showStatusById = function(id) {
+                    Str.get_string(id, 'tiny_aipromptgen').then(function(s) {
+                        showStatus(s);
+                        return s;
+                    }).catch(function() {
+                        // Silent fail.
+                    });
                 };
 
                 var showStatus = function(msg) {
@@ -349,12 +390,10 @@ define([], function() {
                     } else if (refs.bodyCode && refs.bodyCode.style.display !== 'none') {
                         content = refs.bodyCode.textContent;
                     } else if (refs.bodyText && refs.bodyText.style.display !== 'none') {
-                        // Convert newlines to paragraphs for plain text view.
                         content = refs.bodyText.textContent.trim().split(/\n+/).map(function(p) {
                             return '<p>' + p.trim() + '</p>';
                         }).join('');
                     } else if (refs.bodyRaw && refs.bodyRaw.style.display !== 'none') {
-                        // Convert newlines to breaks for raw view.
                         content = refs.bodyRaw.textContent.replace(/\n/g, '<br>');
                     }
 

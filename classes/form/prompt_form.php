@@ -88,7 +88,7 @@ class prompt_form extends \moodleform {
             'type' => 'button',
             'id' => 'ai4t-age-browse',
             'class' => 'btn btn-secondary btn-sm',
-            'title' => 'Browse age or range',
+            'title' => \get_string('form:agebrowse', 'tiny_aipromptgen'),
         ]);
         $mform->addGroup($ageelems, 'agegroup', \get_string('form:agerangelabel', 'tiny_aipromptgen'), ' ', false);
         $mform->setType('agerange', PARAM_TEXT);
@@ -224,7 +224,7 @@ class prompt_form extends \moodleform {
                 'type' => 'button',
                 'id' => 'ai4t-language-browse',
                 'class' => 'btn btn-secondary btn-sm',
-                'title' => 'Browse languages',
+                'title' => \get_string('form:languagebrowse', 'tiny_aipromptgen'),
             ]
         );
         $mform->addGroup($langgroupelems, 'languagegroup', get_string('form:language', 'tiny_aipromptgen'), ' ', false);
@@ -247,7 +247,7 @@ class prompt_form extends \moodleform {
                 'type' => 'button',
                 'id' => 'ai4t-purpose-browse',
                 'class' => 'btn btn-secondary btn-sm',
-                'title' => 'Browse purposes',
+                'title' => \get_string('form:purposebrowse', 'tiny_aipromptgen'),
             ]
         );
         $mform->addGroup($purposeelems, 'purposegroup', get_string('form:purpose', 'tiny_aipromptgen'), ' ', false);
@@ -268,7 +268,7 @@ class prompt_form extends \moodleform {
                 'type' => 'button',
                 'id' => 'ai4t-audience-browse',
                 'class' => 'btn btn-secondary btn-sm',
-                'title' => 'Browse audiences',
+                'title' => \get_string('form:audiencebrowse', 'tiny_aipromptgen'),
             ]
         );
         $mform->addGroup($audienceelems, 'audiencegroup', get_string('form:audience', 'tiny_aipromptgen'), ' ', false);
