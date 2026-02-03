@@ -1,4 +1,231 @@
+/**
+ * This file is part of Moodle - http://moodle.org/
+ *
+ * Moodle is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Moodle is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
+ * Styles for the AI Prompt Generator.
+ *
+ * @package    tiny_aipromptgen
+ * @copyright  2025 AI4Teachers
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 /* TinyAI Prompt Generator styles */
+
+/* Form Group Layout Improvements */
+.form-group.fitem .felement.fgroup {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.form-group.fitem .felement.fgroup input.form-control,
+.form-group.fitem .felement.fgroup textarea.form-control {
+    flex: 1 1 300px;
+    min-width: 0;
+}
+
+.form-group.fitem .felement.fgroup .btn {
+    white-space: nowrap;
+    margin-top: 0 !important;
+    align-self: center;
+}
+
+/* Specific Moodle Form alignment fixes */
+.mform .fitem.fitem_fgroup .felement {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Modal Backbone */
+.ai4t-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 1040;
+}
+
+.ai4t-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 600px;
+    max-height: 85vh;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: ai4t-fadeInScale 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes ai4t-fadeInScale {
+    from { opacity: 0; transform: translate(-50%, -45%) scale(0.95); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* Modal Interior */
+.ai4t-modal header {
+    padding: 16px 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ai4t-modal header h3 {
+    margin: 0 !important;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #343a40;
+}
+
+.ai4t-modal header .btn-link {
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 1.5rem;
+    padding: 0;
+    line-height: 1;
+    border: none;
+    background: transparent;
+    transition: color 0.2s;
+}
+
+.ai4t-modal header .btn-link:hover {
+    color: #dc3545;
+}
+
+.ai4t-modal .ai4t-body {
+    padding: 16px 20px;
+    overflow-y: auto;
+    flex: 1;
+    background: #fff;
+}
+
+.ai4t-modal footer {
+    padding: 12px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+/* List Styles within Modals */
+.ai4t-list {
+    list-style: none !important;
+    padding: 0;
+    margin: 0;
+}
+
+.ai4t-item, .ai4t-lesson-item {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #f0f0f0;
+    margin-bottom: 8px;
+    outline: none;
+    background: #fff;
+    color: #495057;
+    text-align: left;
+}
+
+.ai4t-item:hover, .ai4t-lesson-item:hover, .ai4t-item:focus, .ai4t-lesson-item:focus {
+    background: #f8f9fa;
+    border-color: #0d6efd;
+    color: #0d6efd;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.08);
+    transform: translateY(-1px);
+}
+
+.ai4t-section {
+    font-weight: 700;
+    color: #adb5bd;
+    padding: 20px 8px 8px 8px;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 12px;
+}
+
+/* Outcome Specifics */
+.ai4t-outcome-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #0d6efd;
+}
+
+/* Generated Prompt Textarea */
+#ai4t-generated {
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+    padding: 15px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    background-color: #fdfdfd;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#ai4t-generated:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+    outline: none;
+    background-color: #fff;
+}
+
+/* Action buttons polish */
+.ai4t-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+/* Response status */
+#ai-response-status, #ai4t-modal-status {
+    font-size: 0.85rem;
+    color: #666;
+    animation: ai4t-pulse 2s infinite;
+}
+
+@keyframes ai4t-pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+
+/* Moodle 5.0 Compat */
 .tox .tox-tbtn--bespoke .tox-tbtn__select-label {
     width: auto;
 }
