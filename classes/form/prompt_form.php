@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Main form for the AI Prompt Generator.
+ *
+ * @package    tiny_aipromptgen
+ * @copyright  2025 AI4Teachers
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace tiny_aipromptgen\form;
 
 defined('MOODLE_INTERNAL') || die();

@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Helper class for the AI Prompt Generator.
+ *
+ * @package    tiny_aipromptgen
+ * @copyright  2025 AI4Teachers
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace tiny_aipromptgen;
 
 use core_competency\api as competency_api;
