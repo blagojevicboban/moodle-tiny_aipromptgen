@@ -73,12 +73,9 @@ class plugininfo extends plugin implements plugin_with_buttons, plugin_with_conf
     ): array {
         global $PAGE;
 
-        // Configuration logic here.
-        $systemcontext = \context_system::instance();
-
         return [
-            'canView' => has_capability('block/aipromptgen:manage', $systemcontext) || is_siteadmin(),
-            'blockUrl' => $PAGE->url->out(false),
+            'canView' => has_capability('tiny/aipromptgen:use', $context),
+            'blockUrl' => (new \moodle_url('/lib/editor/tiny/plugins/aipromptgen/view.php'))->out(false),
             'sesskey' => sesskey(),
         ];
     }

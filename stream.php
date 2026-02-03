@@ -51,7 +51,7 @@ header('X-Accel-Buffering: no');
  * @param string $event The SSE event name (e.g. start, chunk, error, done).
  * @return void
  */
-function send_event(string $data, string $event = 'message'): void {
+function tiny_aipromptgen_send_event(string $data, string $event = 'message'): void {
     echo "event: {$event}\n";
     foreach (preg_split('/\r?\n/', $data) as $line) {
         echo 'data: ' . $line . "\n";
@@ -71,16 +71,16 @@ if ($rawprompt === '') {
 
 // Only Ollama streaming implemented here.
 if ($provider !== 'ollama') {
-    send_event('Unsupported provider for streaming: ' . $provider, 'error');
-    send_event('[DONE]', 'done');
+    tiny_aipromptgen_send_event('Unsupported provider for streaming: ' . $provider, 'error');
+    tiny_aipromptgen_send_event('[DONE]', 'done');
     exit;
 }
 
 $endpoint = (string)(get_config('tiny_aipromptgen', 'ollama_endpoint') ?? '');
 $model = (string)(get_config('tiny_aipromptgen', 'ollama_model') ?? '');
 if ($endpoint === '' || $model === '') {
-    send_event('Ollama not configured', 'error');
-    send_event('[DONE]', 'done');
+    tiny_aipromptgen_send_event('Ollama not configured', 'error');
+    tiny_aipromptgen_send_event('[DONE]', 'done');
     exit;
 }
 
@@ -141,14 +141,14 @@ $options = [
                 continue;
             }
             if (isset($obj['error'])) {
-                send_event('Error: ' . $obj['error'], 'error');
+                tiny_aipromptgen_send_event('Error: ' . $obj['error'], 'error');
                 continue;
             }
             if (isset($obj['response'])) {
-                send_event($obj['response'], 'chunk');
+                tiny_aipromptgen_send_event($obj['response'], 'chunk');
             }
             if (!empty($obj['done'])) {
-                send_event('[DONE]', 'done');
+                tiny_aipromptgen_send_event('[DONE]', 'done');
             }
         }
         return strlen($chunk);
@@ -161,10 +161,10 @@ if (preg_match('~^https?://(localhost|127\.0\.0\.1|192\.168\.|10\.|172\.(1[6-9]|
     $options['CURLOPT_SSL_VERIFYHOST'] = 0;
 }
 
-send_event('Streaming start', 'start');
+tiny_aipromptgen_send_event('Streaming start', 'start');
 $curl->post($url, $payload, $options);
 if ($curl->error) {
-    send_event('cURL error: ' . $curl->error, 'error');
+    tiny_aipromptgen_send_event('cURL error: ' . $curl->error, 'error');
 }
-send_event('[DONE]', 'done');
+tiny_aipromptgen_send_event('[DONE]', 'done');
 exit;
