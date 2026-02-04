@@ -22,13 +22,13 @@
 
 | Moodle Version | Supported |
 |----------------|-----------|
-| Moodle 4.0     | ✅        |
 | Moodle 4.1     | ✅        |
 | Moodle 4.2     | ✅        |
 | Moodle 4.3     | ✅        |
 | Moodle 4.4     | ✅        |
 | Moodle 4.5     | ✅        |
 | Moodle 5.0     | ✅        |
+| Moodle 5.1     | ✅        |
 
 **Minimum PHP Version**: 8.1
 
@@ -78,7 +78,7 @@ grunt amd --force
 
 ## Technical Requirements
 
-- Moodle 4.0 or higher
+- Moodle 4.1 or higher
 - PHP 8.1 or higher
 - TinyMCE editor enabled (standard in Moodle 4.x)
 - Node.js 20+ (for building AMD modules if modifying the source)
