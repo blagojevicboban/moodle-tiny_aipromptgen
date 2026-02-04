@@ -60,20 +60,20 @@ define(['core/str'], function(Str) {
                     var language = getValue('id_language');
 
                     Str.get_strings([
-                        {key: 'prompt:expert', component: 'tiny_aipromptgen'},
-                        {key: 'prompt:subject', component: 'tiny_aipromptgen', param: subject},
-                        {key: 'prompt:age', component: 'tiny_aipromptgen', param: age},
-                        {key: 'prompt:topic', component: 'tiny_aipromptgen', param: topic},
-                        {key: 'prompt:lesson_title', component: 'tiny_aipromptgen', param: lesson},
-                        {key: 'prompt:num_lessons', component: 'tiny_aipromptgen', param: count},
-                        {key: 'prompt:duration', component: 'tiny_aipromptgen', param: duration},
-                        {key: 'prompt:class_type', component: 'tiny_aipromptgen', param: classtype},
-                        {key: 'prompt:purpose', component: 'tiny_aipromptgen', param: purpose},
-                        {key: 'prompt:audience', component: 'tiny_aipromptgen', param: audience},
-                        {key: 'prompt:outcomes', component: 'tiny_aipromptgen'},
-                        {key: 'prompt:language', component: 'tiny_aipromptgen', param: language || ''},
-                        {key: 'prompt:footer', component: 'tiny_aipromptgen'},
-                        {key: 'default:language', component: 'tiny_aipromptgen'}
+                        {key: 'prompt_expert', component: 'tiny_aipromptgen'},
+                        {key: 'prompt_subject', component: 'tiny_aipromptgen', param: subject},
+                        {key: 'prompt_age', component: 'tiny_aipromptgen', param: age},
+                        {key: 'prompt_topic', component: 'tiny_aipromptgen', param: topic},
+                        {key: 'prompt_lesson_title', component: 'tiny_aipromptgen', param: lesson},
+                        {key: 'prompt_num_lessons', component: 'tiny_aipromptgen', param: count},
+                        {key: 'prompt_duration', component: 'tiny_aipromptgen', param: duration},
+                        {key: 'prompt_class_type', component: 'tiny_aipromptgen', param: classtype},
+                        {key: 'prompt_purpose', component: 'tiny_aipromptgen', param: purpose},
+                        {key: 'prompt_audience', component: 'tiny_aipromptgen', param: audience},
+                        {key: 'prompt_outcomes', component: 'tiny_aipromptgen'},
+                        {key: 'prompt_language', component: 'tiny_aipromptgen', param: language || ''},
+                        {key: 'prompt_footer', component: 'tiny_aipromptgen'},
+                        {key: 'default_language', component: 'tiny_aipromptgen'}
                     ]).then(function(strings) {
                         var sExpert = strings[0];
                         var sSubject = strings[1];
