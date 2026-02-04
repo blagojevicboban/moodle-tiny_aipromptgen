@@ -31,22 +31,8 @@ jobs:
       fail-fast: false
       matrix:
         php: ['7.4', '8.0', '8.1']
-        moodle-branch: ['MOODLE_400_STABLE','MOODLE_401_STABLE','MOODLE_402_STABLE','MOODLE_403_STABLE','MOODLE_404_STABLE','MOODLE_405_STABLE', 'MOODLE_50_STABLE']
+        moodle-branch: ['MOODLE_500_STABLE', 'MOODLE_501_STABLE']
         database: [pgsql, mariadb]
-        exclude:
-          # Moodle 4.4+ requires PHP 8.1+
-          - php: '7.4'
-            moodle-branch: 'MOODLE_404_STABLE'
-          - php: '7.4'
-            moodle-branch: 'MOODLE_405_STABLE'
-          - php: '7.4'
-            moodle-branch: 'MOODLE_50_STABLE'
-          - php: '8.0'
-            moodle-branch: 'MOODLE_404_STABLE'
-          - php: '8.0'
-            moodle-branch: 'MOODLE_405_STABLE'
-          - php: '8.0'
-            moodle-branch: 'MOODLE_50_STABLE'
 
     steps:
       - name: Check out repository code
