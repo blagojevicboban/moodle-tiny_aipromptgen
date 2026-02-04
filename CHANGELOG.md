@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3] - 2026-02-04
+
+### Fixed
+- Fixed JavaScript string keys in ui.js to use underscores instead of colons, matching the language file updates from v1.2.
+- Prompt generation now correctly displays localized strings instead of raw string identifiers.
+
 ## [1.2] - 2026-02-04
 
 ### Changed
