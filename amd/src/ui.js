@@ -75,11 +75,20 @@ define(['core/str'], function(Str) {
                         {key: 'prompt:footer', component: 'tiny_aipromptgen'},
                         {key: 'default:language', component: 'tiny_aipromptgen'}
                     ]).then(function(strings) {
-                        var sExpert = strings[0], sSubject = strings[1], sAge = strings[2],
-                            sTopic = strings[3], sLessonTitle = strings[4], sNumLessons = strings[5],
-                            sDuration = strings[6], sClassType = strings[7], sPurpose = strings[8],
-                            sAudience = strings[9], sOutcomes = strings[10], sLanguage = strings[11],
-                            sFooter = strings[12], sDefLang = strings[13];
+                        var sExpert = strings[0];
+                        var sSubject = strings[1];
+                        var sAge = strings[2];
+                        var sTopic = strings[3];
+                        var sLessonTitle = strings[4];
+                        var sNumLessons = strings[5];
+                        var sDuration = strings[6];
+                        var sClassType = strings[7];
+                        var sPurpose = strings[8];
+                        var sAudience = strings[9];
+                        var sOutcomes = strings[10];
+                        var sLanguage = strings[11];
+                        var sFooter = strings[12];
+                        var sDefLang = strings[13];
 
                         var usedLang = language || sDefLang;
                         if (!language) {
