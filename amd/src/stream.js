@@ -119,7 +119,7 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
 
             const statusEl = setupStreamingUI(resp);
             const root = (window.M && window.M.cfg && window.M.cfg.wwwroot) ? window.M.cfg.wwwroot : '';
-            const base = root + '/lib/editor/tiny/plugins/aipromptgen/stream.php';
+            const base = root + '/lib/editor/tiny/plugins/aipromptgen/view.php?action=stream';
 
             let prompt = gen.value || gen.textContent || '';
             if (!prompt) {

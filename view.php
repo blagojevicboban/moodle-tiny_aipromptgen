@@ -32,10 +32,17 @@ use tiny_aipromptgen\ai_client;
 // Get the course ID from the URL or fallback to the site page.
 $courseid = optional_param('courseid', SITEID, PARAM_INT);
 
+
 // Login and capability checks.
 require_login($courseid);
 $context = context_course::instance($courseid);
 require_capability('tiny/aipromptgen:use', $context);
+
+if (optional_param('action', '', PARAM_ALPHA) === 'stream') {
+    require_sesskey();
+    require_once(__DIR__ . '/stream.php');
+    exit;
+}
 
 // Page setup.
 $PAGE->set_url(new moodle_url('/lib/editor/tiny/plugins/aipromptgen/view.php', ['courseid' => $courseid]));
