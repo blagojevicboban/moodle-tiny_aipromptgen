@@ -183,7 +183,7 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
                         buffer += '\n\n'; // Force flush.
                         processLines();
                     }
-                    return Promise.resolve();
+                    return null;
                 }
                 buffer += decoder.decode(result.value, {stream: true});
                 processLines();
@@ -237,11 +237,24 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
         }).catch(function(err) {
             clearInterval(checkTimeout);
             if (resp) {
-                Str.get_string('status_error', 'tiny_aipromptgen').then(function(s) {
+                return Str.get_string('status_error', 'tiny_aipromptgen').then(function(s) {
                     resp.textContent += '\n[' + s + '] ' + err.message;
+                    updateElText(statusEl, 'status_error');
+                    if (modalStatus) {
+                        updateElText(modalStatus, 'status_error_occurred');
+                        modalStatus.style.color = '#dc3545';
+                    }
+                    scrollToResponse();
                     return s;
                 }).catch(function() {
                     resp.textContent += '\n[Error] ' + err.message;
+                    updateElText(statusEl, 'status_error');
+                    if (modalStatus) {
+                        updateElText(modalStatus, 'status_error_occurred');
+                        modalStatus.style.color = '#dc3545';
+                    }
+                    scrollToResponse();
+                    return null;
                 });
             }
             updateElText(statusEl, 'status_error');
