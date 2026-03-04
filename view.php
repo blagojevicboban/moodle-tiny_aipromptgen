@@ -85,7 +85,7 @@ $provider = optional_param('sendto', '', PARAM_TEXT);
 
 if (!empty($provider) && !empty($rawprompt) && confirm_sesskey()) {
     $generatedprompt = $rawprompt;
-    if ($provider === 'openai' || $provider === 'ollama') {
+    if (in_array($provider, ['openai', 'ollama', 'gemini', 'claude'])) {
         $client = new ai_client();
         $airesponse = $client->send_request($provider, $generatedprompt);
     }
@@ -104,6 +104,7 @@ $mform->display();
 // 2. Render Template for Results and Modals.
 $tmpldata = [
     'courseid' => $courseid,
+    'coursename' => $course->fullname,
     'sesskey' => sesskey(),
     'hasgenerated' => $hasgenerated,
     'generatedprompt' => $generatedprompt,
@@ -168,12 +169,24 @@ $tmpldata = [
             'selected' => true,
         ],
         [
+            'value' => 'gemini',
+            'label' => 'Gemini' . (get_config('tiny_aipromptgen', 'gemini_apikey') ? '' : ' (✕ Not configured)'),
+            'selected' => false,
+        ],
+        [
+            'value' => 'claude',
+            'label' => 'Claude' . (get_config('tiny_aipromptgen', 'claude_apikey') ? '' : ' (✕ Not configured)'),
+            'selected' => false,
+        ],
+        [
             'value' => 'ollama',
             'label' => 'Ollama' . (get_config('tiny_aipromptgen', 'ollama_endpoint') ? '' : ' (✕ Not configured)'),
             'selected' => false,
         ],
     ],
     'providersavailable' => (get_config('tiny_aipromptgen', 'openai_apikey') ||
+        get_config('tiny_aipromptgen', 'gemini_apikey') ||
+        get_config('tiny_aipromptgen', 'claude_apikey') ||
         get_config('tiny_aipromptgen', 'ollama_endpoint')),
 
     'airesponse_initial' => $airesponse,

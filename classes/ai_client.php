@@ -32,6 +32,18 @@ class ai_client {
     /** @var string OpenAI Model */
     private $openaimodel;
 
+    /** @var string Gemini API Key */
+    private $geminikey;
+
+    /** @var string Gemini Model */
+    private $geminimodel;
+
+    /** @var string Claude API Key */
+    private $claudekey;
+
+    /** @var string Claude Model */
+    private $claudemodel;
+
     /** @var string Ollama Endpoint */
     private $ollamaendpoint;
 
@@ -45,6 +57,12 @@ class ai_client {
         $this->openaikey = get_config('tiny_aipromptgen', 'openai_apikey');
         $this->openaimodel = get_config('tiny_aipromptgen', 'openai_model') ?: 'gpt-3.5-turbo';
 
+        $this->geminikey = get_config('tiny_aipromptgen', 'gemini_apikey');
+        $this->geminimodel = get_config('tiny_aipromptgen', 'gemini_model') ?: 'gemini-1.5-flash';
+
+        $this->claudekey = get_config('tiny_aipromptgen', 'claude_apikey');
+        $this->claudemodel = get_config('tiny_aipromptgen', 'claude_model') ?: 'claude-3-5-sonnet-20240620';
+
         $this->ollamaendpoint = get_config('tiny_aipromptgen', 'ollama_endpoint');
         $this->ollamamodel = get_config('tiny_aipromptgen', 'ollama_model') ?: 'llama3';
     }
@@ -52,17 +70,23 @@ class ai_client {
     /**
      * Send a prompt to the specified provider.
      *
-     * @param string $provider 'openai' or 'ollama'
+     * @param string $provider 'openai', 'gemini', 'claude' or 'ollama'
      * @param string $prompt The prompt text
      * @return string The AI response text
      */
     public function send_request(string $provider, string $prompt): string {
-        if ($provider === 'openai') {
-            return $this->send_to_openai($prompt);
-        } else if ($provider === 'ollama') {
-            return $this->send_to_ollama($prompt);
+        switch ($provider) {
+            case 'openai':
+                return $this->send_to_openai($prompt);
+            case 'gemini':
+                return $this->send_to_gemini($prompt);
+            case 'claude':
+                return $this->send_to_claude($prompt);
+            case 'ollama':
+                return $this->send_to_ollama($prompt);
+            default:
+                return 'Unknown provider specified.';
         }
-        return 'Unknown provider specified.';
     }
 
     /**
@@ -91,7 +115,68 @@ class ai_client {
             'temperature' => 0.7,
         ]);
 
-        return $this->perform_curl_request($endpoint, $payload, $headers);
+        return $this->perform_curl_request($endpoint, $payload, $headers, 60, false, 'openai');
+    }
+
+    /**
+     * Send request to Gemini.
+     *
+     * @param string $prompt
+     * @return string
+     */
+    private function send_to_gemini(string $prompt): string {
+        if (empty($this->geminikey)) {
+            return get_string('error_nogeminiapikey', 'tiny_aipromptgen');
+        }
+
+        $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/" .
+            "{$this->geminimodel}:generateContent?key={$this->geminikey}";
+        $headers = ['Content-Type: application/json'];
+
+        $payload = json_encode([
+            'contents' => [
+                ['parts' => [['text' => $prompt]]],
+            ],
+            'system_instruction' => [
+                'parts' => [['text' => get_string('system_role', 'tiny_aipromptgen')]],
+            ],
+            'generationConfig' => [
+                'temperature' => 0.7,
+            ],
+        ]);
+
+        return $this->perform_curl_request($endpoint, $payload, $headers, 60, false, 'gemini');
+    }
+
+    /**
+     * Send request to Claude.
+     *
+     * @param string $prompt
+     * @return string
+     */
+    private function send_to_claude(string $prompt): string {
+        if (empty($this->claudekey)) {
+            return get_string('error_noclaudeapikey', 'tiny_aipromptgen');
+        }
+
+        $endpoint = 'https://api.anthropic.com/v1/messages';
+        $headers = [
+            'X-API-Key: ' . $this->claudekey,
+            'Anthropic-Version: 2023-06-01',
+            'Content-Type: application/json',
+        ];
+
+        $payload = json_encode([
+            'model' => $this->claudemodel,
+            'max_tokens' => 4096,
+            'system' => get_string('system_role', 'tiny_aipromptgen'),
+            'messages' => [
+                ['role' => 'user', 'content' => $prompt],
+            ],
+            'temperature' => 0.7,
+        ]);
+
+        return $this->perform_curl_request($endpoint, $payload, $headers, 60, false, 'claude');
     }
 
     /**
@@ -114,7 +199,7 @@ class ai_client {
         ]);
 
         // Ollama usually runs on local network/localhost, SSL might be self-signed or HTTP.
-        return $this->perform_curl_request($endpoint, $payload, [], 60, true, true);
+        return $this->perform_curl_request($endpoint, $payload, [], 60, true, 'ollama');
     }
 
     /**
@@ -125,7 +210,7 @@ class ai_client {
      * @param array $headers
      * @param int $timeout
      * @param bool $ignoresecurity
-     * @param bool $isollama
+     * @param string $provider
      * @return string
      */
     private function perform_curl_request(
@@ -134,7 +219,7 @@ class ai_client {
         array $headers = [],
         int $timeout = 60,
         bool $ignoresecurity = false,
-        bool $isollama = false
+        string $provider = 'openai'
     ): string {
         $curl = new curl();
 
@@ -159,19 +244,33 @@ class ai_client {
             return 'cURL Error (' . $curl->errno . '): ' . $curl->error;
         }
 
-        if ($isollama) {
+        if ($provider === 'ollama') {
             return $this->process_ollama_response($response, false);
         }
 
-        // OpenAI format.
         $json = json_decode($response, true);
-        if (isset($json['choices'][0]['message']['content'])) {
-            return $json['choices'][0]['message']['content'];
-        } else if (isset($json['error']['message'])) {
-            return 'API Error: ' . $json['error']['message'];
+        if ($provider === 'openai') {
+            if (isset($json['choices'][0]['message']['content'])) {
+                return $json['choices'][0]['message']['content'];
+            }
+        } else if ($provider === 'gemini') {
+            if (isset($json['candidates'][0]['content']['parts'][0]['text'])) {
+                return $json['candidates'][0]['content']['parts'][0]['text'];
+            }
+        } else if ($provider === 'claude') {
+            if (isset($json['content'][0]['text'])) {
+                return $json['content'][0]['text'];
+            }
         }
 
-        return 'Unknown response format: ' . substr($response, 0, 100) . '...';
+        // Generic error handling.
+        if (isset($json['error']['message'])) {
+            return 'API Error: ' . $json['error']['message'];
+        } else if (isset($json['error'])) {
+            return 'API Error: ' . (is_array($json['error']) ? json_encode($json['error']) : $json['error']);
+        }
+
+        return 'Unknown response format: ' . substr($response, 0, 200) . '...';
     }
 
     /**

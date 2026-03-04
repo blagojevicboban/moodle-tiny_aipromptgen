@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'tiny_aipromptgen';
-$plugin->version = 2026020403;
-$plugin->release = '1.3';
+$plugin->version = 2026030400;
+$plugin->release = '1.4';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->requires = 2022041900; // Moodle 4.0+.

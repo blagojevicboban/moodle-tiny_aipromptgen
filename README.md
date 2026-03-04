@@ -2,13 +2,15 @@
 
 [![Moodle Plugin CI](https://github.com/blagojevicboban/moodle-tiny_aipromptgen/actions/workflows/ci.yml/badge.svg)](https://github.com/blagojevicboban/moodle-tiny_aipromptgen/actions/workflows/ci.yml)
 
-**Tiny AI Prompt Generator** is a self-contained TinyMCE plugin for Moodle. It allows teachers to build pedagogical prompts through a guided interface and generate AI responses using **OpenAI** or a local **Ollama** server, directly within the editor.
+**Tiny AI Prompt Generator** is a self-contained TinyMCE plugin for Moodle. It allows teachers to build pedagogical prompts through a guided interface and generate AI responses using **OpenAI**, **Google Gemini**, **Anthropic Claude** or a local **Ollama** server, directly within the editor.
 
 ## Features
 
 - **Standalone Guided Builder**: Easily construct prompts by selecting subjects, topics, learning outcomes, and more.
 - **AI Response Integration**:
     - **OpenAI**: Connect to GPT-3.5/4/4o models via API key.
+    - **Google Gemini**: Support for Gemini 1.5 Pro and Flash models.
+    - **Anthropic Claude**: Support for Claude 3.5 Sonnet and Haiku models.
     - **Ollama**: Connect to local LLMs (like Llama 3, Phi-3, Mistral) for private, zero-cost generation.
 - **Real-time Streaming**: Watch AI responses appear in real-time as they are generated.
 - **Response Modes**: View and copy AI responses in multiple formats:
@@ -18,6 +20,11 @@
     - **HTML CODE**: The underlying HTML source.
 - **Privacy Compliant**: Implements Moodle Privacy API (null provider - no personal data stored).
 
+## Related Plugins
+ 
+If you prefer a side-block interface instead of an editor-integrated tool, check out:
+- **[AI tools for teachers - prompt generator](https://moodle.org/plugins/block_aipromptgen)**: A Moodle block version of this utility.
+ 
 ## Compatibility
 
 | Moodle Version | Supported |
@@ -45,6 +52,16 @@
 1. Obtain an API key from [OpenAI](https://platform.openai.com/api-keys).
 2. Enter your API key in the plugin settings.
 3. Choose your preferred model (default: `gpt-4o-mini`).
+
+### Google Gemini Setup
+1. Obtain an API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+2. Enter your API key in the plugin settings.
+3. Choose your preferred model (default: `gemini-1.5-flash`).
+
+### Anthropic Claude Setup
+1. Obtain an API key from [Anthropic Console](https://console.anthropic.com/).
+2. Enter your API key in the plugin settings.
+3. Choose your preferred model (default: `claude-3-5-sonnet-20240620`).
 
 ### Ollama Setup (Local AI)
 1. Install [Ollama](https://ollama.ai/) on your server.

@@ -1,149 +1,183 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tiny AI Prompt Generator - Documentation</title>
-</head>
-<body>
-    <header>
-        <h1>Tiny AI Prompt Generator (TinyMCE Plugin)</h1>
-        <p>
-            <a href="https://github.com/blagojevicboban/moodle-tiny_aipromptgen/actions/workflows/ci.yml">
-                <img src="https://github.com/blagojevicboban/moodle-tiny_aipromptgen/actions/workflows/ci.yml/badge.svg" alt="Moodle Plugin CI">
-            </a>
-        </p>
-    </header>
-
-    <main>
-        <section id="introduction">
-            <p><strong>Tiny AI Prompt Generator</strong> is a self-contained TinyMCE plugin for Moodle. It allows teachers to build pedagogical prompts through a guided interface and generate AI responses using <strong>OpenAI</strong> or a local <strong>Ollama</strong> server, directly within the editor.</p>
-        </section>
-
-        <section id="features">
-            <h2>Features</h2>
-            <ul>
-                <li><strong>Standalone Guided Builder</strong>: Easily construct prompts by selecting subjects, topics, learning outcomes, and more.</li>
-                <li><strong>AI Response Integration</strong>:
-                    <ul>
-                        <li><strong>OpenAI</strong>: Connect to GPT-3.5/4/4o models via API key.</li>
-                        <li><strong>Ollama</strong>: Connect to local LLMs (like Llama 3, Phi-3, Mistral) for private, zero-cost generation.</li>
-                    </ul>
-                </li>
-                <li><strong>Real-time Streaming</strong>: Watch AI responses appear in real-time as they are generated.</li>
-                <li><strong>Response Modes</strong>: View and copy AI responses in multiple formats:
-                    <ul>
-                        <li><strong>RAW</strong>: Exact AI output.</li>
-                        <li><strong>TEXT</strong>: Cleaned up plain text.</li>
-                        <li><strong>HTML</strong>: Rendered formatting.</li>
-                        <li><strong>HTML CODE</strong>: The underlying HTML source.</li>
-                    </ul>
-                </li>
-                <li><strong>Privacy Compliant</strong>: Implements Moodle Privacy API (null provider - no personal data stored).</li>
-            </ul>
-        </section>
-
-        <section id="compatibility">
-            <h2>Compatibility</h2>
-            <table border="1">
-                <thead>
-                    <tr>
-                        <th>Moodle Version</th>
-                        <th>Supported</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>Moodle 4.0</td><td>✅</td></tr>
-                    <tr><td>Moodle 4.1</td><td>✅</td></tr>
-                    <tr><td>Moodle 4.2</td><td>✅</td></tr>
-                    <tr><td>Moodle 4.3</td><td>✅</td></tr>
-                    <tr><td>Moodle 4.4</td><td>✅</td></tr>
-                    <tr><td>Moodle 4.5</td><td>✅</td></tr>
-                    <tr><td>Moodle 5.0</td><td>✅</td></tr>
-                </tbody>
-            </table>
-            <p><strong>Minimum PHP Version</strong>: 8.1</p>
-        </section>
-
-        <section id="installation">
-            <h2>Installation</h2>
-            <ol>
-                <li>Download the plugin and place it in: <code>lib/editor/tiny/plugins/aipromptgen</code></li>
-                <li>Login to Moodle as an administrator.</li>
-                <li>Navigate to <strong>Site administration &rarr; Notifications</strong> to complete the installation.</li>
-                <li>Go to <strong>Site administration &rarr; Plugins &rarr; Text editors &rarr; TinyMCE editor &rarr; AI Prompt Generator</strong> to configure your API keys (OpenAI) or Ollama endpoints.</li>
-            </ol>
-        </section>
-
-        <section id="configuration">
-            <h2>Configuration</h2>
-            <h3>OpenAI Setup</h3>
-            <ol>
-                <li>Obtain an API key from <a href="https://platform.openai.com/api-keys">OpenAI</a>.</li>
-                <li>Enter your API key in the plugin settings.</li>
-                <li>Choose your preferred model (default: <code>gpt-4o-mini</code>).</li>
-            </ol>
-            <h3>Ollama Setup (Local AI)</h3>
-            <ol>
-                <li>Install <a href="https://ollama.ai/">Ollama</a> on your server.</li>
-                <li>Pull a model: <code>ollama pull llama3</code></li>
-                <li>Configure the endpoint in plugin settings (default: <code>http://localhost:11434</code>).</li>
-                <li>Set the model name (e.g., <code>llama3</code>, <code>mistral</code>, <code>phi3:mini</code>).</li>
-            </ol>
-        </section>
-
-        <section id="usage">
-            <h2>Usage</h2>
-            <ol>
-                <li>Open the TinyMCE editor (e.g., in a Course Page, Page resource, or Assignment).</li>
-                <li>Look for the <strong>AI Prompt Generator</strong> icon (&nbsp;🤖&nbsp;) in the toolbar.</li>
-                <li>Fill in the prompt details (Subject, Audience, Outcomes, etc.).</li>
-                <li>Select your preferred AI Provider and click <strong>Send to AI</strong>.</li>
-                <li>View the streaming response and copy or use the generated content.</li>
-            </ol>
-        </section>
-
-        <section id="permissions">
-            <h2>Permissions</h2>
-            <p>The plugin uses the following capability:</p>
-            <ul>
-                <li><code>tiny/aipromptgen:use</code>: Controls who can use the AI Prompt Generator.</li>
-            </ul>
-            <p><strong>Default roles with access</strong>: Manager, Course creator, Editing Teacher, Teacher.</p>
-        </section>
-
-        <section id="building">
-            <h2>Building from Source</h2>
-            <p>If you modify the JavaScript source files, rebuild the AMD modules:</p>
-            <pre><code>cd lib/editor/tiny/plugins/aipromptgen
+<h1>Tiny AI Prompt Generator (TinyMCE Plugin)</h1>
+<p><a
+    href="https://github.com/blagojevicboban/moodle-tiny_aipromptgen/actions/workflows/ci.yml">
+    <img class="img-fluid"
+      src="https://github.com/blagojevicboban/moodle-tiny_aipromptgen/actions/workflows/ci.yml/badge.svg"
+      alt="Moodle Plugin CI"></a> <a href="https://moodle.org/"><img
+      class="img-fluid"
+      src="https://camo.githubusercontent.com/3ec51fba033853103bb82ae861db2f00562e43f46ac71d5bff1aadbb2e46f8b3/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f4d6f6f646c652d342e31253230746f253230352e312d6f72616e67652e737667"
+      alt="Moodle"></a><span>&nbsp;</span><a href="https://php.net/"><img
+      class="img-fluid"
+      src="https://camo.githubusercontent.com/fb7c72456e13f7d5ecf8486e29d02a2e6775aaf4d18622a63529976b0ed0740e/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f5048502d382e312532422d707572706c652e737667"
+      alt="PHP"></a><span>&nbsp;</span><a
+    href="https://github.com/blagojevicboban/moodle-mod_gear/blob/main/LICENSE"><img
+      class="img-fluid"
+      src="https://camo.githubusercontent.com/1b0c7e4911720d0444c16a1ffd145a039f14a1a7305362ab51184f757a4dd6bc/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f4c6963656e73652d47504c25323076332d626c75652e737667"
+      alt="License"></a></p>
+<p><strong>Tiny AI Prompt Generator</strong> is a self-contained TinyMCE plugin
+  for Moodle. It allows teachers to build pedagogical prompts through a guided
+  interface and generate AI responses using <strong>OpenAI</strong>,
+  <strong>Google Gemini</strong>, <strong>Anthropic Claude</strong> or a local
+  <strong>Ollama</strong> server, directly within the editor.</p>
+<h2>Features</h2>
+<ul>
+  <li><strong>Standalone Guided Builder</strong>: Easily construct prompts by
+    selecting subjects, topics, learning outcomes, and more.</li>
+  <li><strong>AI Response Integration</strong>:
+    <ul>
+      <li><strong>OpenAI</strong>: Connect to GPT-3.5/4/4o models via API key.
+      </li>
+      <li><strong>Google Gemini</strong>: Support for Gemini 1.5 Pro and Flash models.
+      </li>
+      <li><strong>Anthropic Claude</strong>: Support for Claude 3.5 Sonnet and Haiku models.
+      </li>
+      <li><strong>Ollama</strong>: Connect to local LLMs (like Llama 3, Phi-3,
+        Mistral) for private, zero-cost generation.</li>
+    </ul>
+  </li>
+  <li><strong>Real-time Streaming</strong>: Watch AI responses appear in
+    real-time as they are generated.</li>
+  <li><strong>Response Modes</strong>: View and copy AI responses in multiple
+    formats:
+    <ul>
+      <li><strong>RAW</strong>: Exact AI output.</li>
+      <li><strong>TEXT</strong>: Cleaned up plain text.</li>
+      <li><strong>HTML</strong>: Rendered formatting.</li>
+      <li><strong>HTML CODE</strong>: The underlying HTML source.</li>
+    </ul>
+  </li>
+  <li><strong>Privacy Compliant</strong>: Implements Moodle Privacy API (null
+    provider - no personal data stored).</li>
+</ul>
+<h2>Related Plugins</h2>
+<p>If you prefer a side-block interface instead of an editor-integrated tool,
+  check out:</p>
+<ul>
+  <li><strong><a href="https://moodle.org/plugins/block_aipromptgen">
+    AI tools for teachers - prompt generator</a></strong>:
+    A Moodle block version of this utility.</li>
+</ul>
+<h2>Compatibility</h2>
+<table border="1">
+  <thead>
+    <tr>
+      <th>Moodle Version</th>
+      <th>Supported</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Moodle 4.1</td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td>Moodle 4.2</td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td>Moodle 4.3</td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td>Moodle 4.4</td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td>Moodle 4.5</td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td>Moodle 5.0</td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td>Moodle 5.1</td>
+      <td>✅</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Minimum PHP Version</strong>: 8.1</p>
+<h2>Installation</h2>
+<ol>
+  <li>Download the plugin and place it in:
+    <code>lib/editor/tiny/plugins/aipromptgen</code></li>
+  <li>Login to Moodle as an administrator.</li>
+  <li>Navigate to <strong>Site administration → Notifications</strong> to
+    complete the installation.</li>
+  <li>Go to <strong>Site administration → Plugins → Text editors → TinyMCE
+      editor → AI Prompt Generator</strong> to configure your API keys (OpenAI,
+    Gemini, Claude) or Ollama endpoints.</li>
+</ol>
+<h2>Configuration</h2>
+<h3>OpenAI Setup</h3>
+<ol>
+  <li>Obtain an API key from <a
+      href="https://platform.openai.com/api-keys">OpenAI</a>.</li>
+  <li>Enter your API key in the plugin settings.</li>
+  <li>Choose your preferred model (default: <code>gpt-4o-mini</code>).</li>
+</ol>
+<h3>Google Gemini Setup</h3>
+<ol>
+  <li>Obtain an API key from <a
+      href="https://aistudio.google.com/app/apikey">Google AI Studio</a>.</li>
+  <li>Enter your API key in the plugin settings.</li>
+  <li>Choose your preferred model (default: <code>gemini-1.5-flash</code>).</li>
+</ol>
+<h3>Anthropic Claude Setup</h3>
+<ol>
+  <li>Obtain an API key from <a
+      href="https://console.anthropic.com/">Anthropic Console</a>.</li>
+  <li>Enter your API key in the plugin settings.</li>
+  <li>Choose your preferred model
+    (default: <code>claude-3-5-sonnet-20240620</code>).</li>
+</ol>
+<h3>Ollama Setup (Local AI)</h3>
+<ol>
+  <li>Install <a href="https://ollama.ai/">Ollama</a> on your server.</li>
+  <li>Pull a model: <code>ollama pull llama3</code></li>
+  <li>Configure the endpoint in plugin settings (default:
+    <code>http://localhost:11434</code>).</li>
+  <li>Set the model name (e.g., <code>llama3</code>, <code>mistral</code>,
+    <code>phi3:mini</code>).</li>
+</ol>
+<h2>Usage</h2>
+<ol>
+  <li>Open the TinyMCE editor (e.g., in a Course Page, Page resource, or
+    Assignment).</li>
+  <li>Look for the <strong>AI Prompt Generator</strong> icon ( 🤖 ) in the
+    toolbar.</li>
+  <li>Fill in the prompt details (Subject, Audience, Outcomes, etc.).</li>
+  <li>Select your preferred AI Provider and click <strong>Send to AI</strong>.
+  </li>
+  <li>View the streaming response and copy or use the generated content.</li>
+</ol>
+<h2>Permissions</h2>
+<p>The plugin uses the following capability:</p>
+<ul>
+  <li><code>tiny/aipromptgen:use</code>: Controls who can use the AI Prompt
+    Generator.</li>
+</ul>
+<p><strong>Default roles with access</strong>: Manager, Course creator, Editing
+  Teacher, Teacher.</p>
+<h2>Building from Source</h2>
+<p>If you modify the JavaScript source files, rebuild the AMD modules:</p>
+<pre><code>cd lib/editor/tiny/plugins/aipromptgen
 grunt amd --force</code></pre>
-        </section>
-
-        <section id="technical-requirements">
-            <h2>Technical Requirements</h2>
-            <ul>
-                <li>Moodle 4.0 or higher</li>
-                <li>PHP 8.1 or higher</li>
-                <li>TinyMCE editor enabled (standard in Moodle 4.x)</li>
-                <li>Node.js 20+ (for building AMD modules if modifying the source)</li>
-            </ul>
-        </section>
-
-        <section id="changelog">
-            <h2>Changelog</h2>
-            <p>See <a href="CHANGELOG.md">CHANGELOG.md</a> for version history.</p>
-        </section>
-
-        <section id="license">
-            <h2>License</h2>
-            <p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
-            <p>See <a href="LICENSE">LICENSE</a> for details.</p>
-        </section>
-    </main>
-
-    <footer>
-        <hr>
-        <p>&copy; 2025 AI4Teachers | <a href="https://github.com/blagojevicboban">Boban Blagojević</a></p>
-    </footer>
-</body>
-</html>
+<h2>Technical Requirements</h2>
+<ul>
+  <li>Moodle 4.1 or higher</li>
+  <li>PHP 8.1 or higher</li>
+  <li>TinyMCE editor enabled (standard in Moodle 4.x)</li>
+  <li>Node.js 20+ (for building AMD modules if modifying the source)</li>
+</ul>
+<h2>License</h2>
+<p>This program is free software: you can redistribute it and/or modify it under
+  the terms of the GNU General Public License as published by the Free Software
+  Foundation, either version 3 of the License, or (at your option) any later
+  version.</p>
+<p><span>The plugin is a product of Erasmus project:</span><br><span>KA220-VET -
+    Cooperation partnerships in vocational education and
+    training</span><br><span>Project Title: AI tools for VET schools</span></p>
+<hr>
+<p>© 2025 AI4Teachers | <a href="https://github.com/blagojevicboban">Boban
+    Blagojević</a></p>

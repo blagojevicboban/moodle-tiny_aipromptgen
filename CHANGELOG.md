@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4] - 2026-03-04
+
+### Added
+- Added support for Google Gemini API (gemini-1.5-flash, gemini-1.5-pro etc.).
+- Added support for Anthropic Claude API (claude-3-5-sonnet, claude-3-haiku etc.).
+- New API configuration settings for Gemini and Claude in Moodle admin panel.
+- Improved AI client with unified multi-provider request handling.
+
 ## [1.3] - 2026-02-04
 
 ### Fixed

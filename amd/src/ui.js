@@ -58,6 +58,8 @@ define(['core/str'], function(Str) {
                     var audience = getValue('id_audience');
                     var outcomes = getValue('id_outcomes');
                     var language = getValue('id_language');
+                    var wrapper = document.getElementById('ai4t-generated-wrapper');
+                    var coursename = wrapper ? wrapper.dataset.coursename : '';
 
                     Str.get_strings([
                         {key: 'prompt_expert', component: 'tiny_aipromptgen'},
@@ -73,7 +75,9 @@ define(['core/str'], function(Str) {
                         {key: 'prompt_outcomes', component: 'tiny_aipromptgen'},
                         {key: 'prompt_language', component: 'tiny_aipromptgen', param: language || ''},
                         {key: 'prompt_footer', component: 'tiny_aipromptgen'},
-                        {key: 'default_language', component: 'tiny_aipromptgen'}
+                        {key: 'default_language', component: 'tiny_aipromptgen'},
+                        {key: 'prompt_prefix', component: 'tiny_aipromptgen', param: coursename || ''},
+                        {key: 'prompt_instructions', component: 'tiny_aipromptgen'}
                     ]).then(function(strings) {
                         var sExpert = strings[0];
                         var sSubject = strings[1];
@@ -89,6 +93,8 @@ define(['core/str'], function(Str) {
                         var sLanguage = strings[11];
                         var sFooter = strings[12];
                         var sDefLang = strings[13];
+                        var sPrefix = strings[14];
+                        var sInstructions = strings[15];
 
                         var usedLang = language || sDefLang;
                         if (!language) {
@@ -96,7 +102,8 @@ define(['core/str'], function(Str) {
                             sLanguage = sLanguage.replace('{$a}', usedLang);
                         }
 
-                        var p = sExpert + "\n";
+                        var p = sPrefix + "\n\n";
+                        p += sExpert + "\n";
                         if (subject) {
                             p += sSubject + "\n";
                         }
@@ -123,8 +130,9 @@ define(['core/str'], function(Str) {
                         if (outcomes) {
                             p += sOutcomes + "\n" + outcomes + "\n";
                         }
-                        p += sLanguage + "\n";
-                        p += "\n" + sFooter;
+                        p += sLanguage + "\n\n";
+                        p += sInstructions + "\n\n";
+                        p += sFooter;
 
                         var gen = document.getElementById('ai4t-generated');
                         if (gen) {

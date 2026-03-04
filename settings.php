@@ -43,6 +43,40 @@ if ($ADMIN->fulltree) {
         PARAM_TEXT
     ));
 
+    // Gemini API key.
+    $settings->add(new admin_setting_configpasswordunmask(
+        'tiny_aipromptgen/gemini_apikey',
+        get_string('setting_gemini_apikey', 'tiny_aipromptgen'),
+        get_string('setting_gemini_apikey_desc', 'tiny_aipromptgen'),
+        ''
+    ));
+
+    // Default Gemini model.
+    $settings->add(new admin_setting_configtext(
+        'tiny_aipromptgen/gemini_model',
+        get_string('setting_gemini_model', 'tiny_aipromptgen'),
+        get_string('setting_gemini_model_desc', 'tiny_aipromptgen'),
+        'gemini-1.5-flash',
+        PARAM_TEXT
+    ));
+
+    // Claude API key.
+    $settings->add(new admin_setting_configpasswordunmask(
+        'tiny_aipromptgen/claude_apikey',
+        get_string('setting_claude_apikey', 'tiny_aipromptgen'),
+        get_string('setting_claude_apikey_desc', 'tiny_aipromptgen'),
+        ''
+    ));
+
+    // Default Claude model.
+    $settings->add(new admin_setting_configtext(
+        'tiny_aipromptgen/claude_model',
+        get_string('setting_claude_model', 'tiny_aipromptgen'),
+        get_string('setting_claude_model_desc', 'tiny_aipromptgen'),
+        'claude-3-5-sonnet-20240620',
+        PARAM_TEXT
+    ));
+
     // Ollama endpoint.
     $settings->add(new admin_setting_configtext(
         'tiny_aipromptgen/ollama_endpoint',
