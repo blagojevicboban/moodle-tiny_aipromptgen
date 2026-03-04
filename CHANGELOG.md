@@ -2,7 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9] - 2026-03-05
+### Fixed
+- **ESLint Warnings (Nested Promises)**: Refactored streaming loop in `amd/src/stream.js` from chained `.then()` / recursive `pump()` pattern to `async/await` with a `while (!result.done)` loop, eliminating `promise/no-nesting` and `no-constant-condition` ESLint warnings.
+- **PHPCS MoodleInternalGlobalState**: Moved `define('NO_DEBUG_DISPLAY', true)` to after `require_once('config.php')` in `view.php` to satisfy the Moodle CodeSniffer global-state rule.
+- **Blank Page Bug**: Removed incorrectly placed `defined('MOODLE_INTERNAL') || die()` guard from the web entry-point `view.php`; that check belongs only in class/library files.
+- **AMD Build**: Rebuilt `amd/build/stream.min.js` using the Moodle-compatible Babel AMD transform (`babel-plugin-transform-es2015-modules-amd-lazy`) to match the exact output format expected by the CI stale-file check.
+
 ## [1.8.2] - 2026-03-05
+
 ### Fixed
 - **Stream Crash / Cache Definition Error**: Fixed an issue where releasing the Moodle session early in `AJAX_SCRIPT` mode caused a fatal error (`The requested cache definition does not exist.core/session`) by properly injecting `$SESSION` globals and disabling `NO_DEBUG_DISPLAY`.
 - **Unhandled Permission Exceptions**: Wrapped capability and login checks in `view.php` with a try-catch block to gracefully intercept internal Moodle security redirects (like `require_sesskey` and `require_capability`), displaying inline UI error messages instead of silently breaking the stream with HTTP 404 or 303 Redirects.
