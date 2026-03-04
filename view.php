@@ -25,8 +25,10 @@
 
 require_once('../../../../../config.php');
 
-if ((isset($_GET['action']) && $_GET['action'] === 'stream') ||
-        (isset($_POST['action']) && $_POST['action'] === 'stream')) {
+if (
+    (isset($_GET['action']) && $_GET['action'] === 'stream') ||
+    (isset($_POST['action']) && $_POST['action'] === 'stream')
+) {
     define('NO_DEBUG_DISPLAY', true);
 }
 
