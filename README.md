@@ -98,6 +98,82 @@ If you prefer a side-block interface instead of an editor-integrated tool, check
 3. Enter the model name supported by your endpoint.
    Compatible services include: LM Studio, Groq, Together AI, OpenRouter, vLLM, Jan, and others.
 
+### Custom Templates (JSON)
+
+You can define your own prompt templates that appear in the dropdown menu. Use placeholders like `{subject}`, `{topic}`, `{lesson}`, `{audience}`, `{outcomes}`.
+
+#### Example 1: Simple JSON
+```json
+[
+  {
+    "title": "Glossary",
+    "prompt": "Create a list of 10 key terms for {subject}, topic: {topic}. Audience: {audience}."
+  },
+  {
+    "title": "Quick Quiz",
+    "prompt": "Create a multiple choice quiz (5 questions) for these outcomes: {outcomes}."
+  }
+]
+```
+
+#### Example 2: Complex JSON (Pedagogical Plan)
+Use `\n` for new lines.
+```json
+[
+  {
+    "title": "Detailed Lesson Plan",
+    "prompt": "Write a 5E lesson plan for {subject}.\n\nTopic: {topic}\nOutcomes: {outcomes}"
+  }
+]
+```
+
+---
+
+### Prilagođeni šabloni (JSON) - Srpski
+
+Možete definisati sopstvene šablone koji se pojavljuju u padajućem meniju. Koristite placeholder-e kao što su `{subject}`, `{topic}`, `{lesson}`, `{audience}`, `{outcomes}`.
+
+#### Primer 1: Jednostavan JSON (Kopiraj ovo za testiranje)
+Ovo uvodi tri nova šablona u padajući meni: Listu pojmova, Brzi kviz i Osnovu za debatu.
+
+```json
+[
+  {
+    "title": "Glosar pojmova",
+    "prompt": "Kreiraj listu od 10 ključnih pojmova i njihovih definicija za predmet {subject}, a konkretno za temu: {topic}. Objašnjenja moraju biti prilagođena uzrastu: {audience}."
+  },
+  {
+    "title": "Brzi test (Multiple Choice)",
+    "prompt": "Napravi kratak test višestrukog izbora (5 pitanja, svako sa 4 ponuđena odgovora i označenim tačnim rešenjem) koji pokriva sledeće ishode učenja: {outcomes}."
+  },
+  {
+    "title": "Tema za debatu",
+    "prompt": "Na osnovu lekcije '{lesson}', osmisli jednu provokativnu tvrdnju za debatu u učionici. Napiši po tri jake teze 'ZA' i tri teze 'PROTIV'."
+  }
+]
+```
+
+#### 💡 Primer 2: Napredni, kompleksni JSON (Kompletan pedagoški plan)
+U ovom primeru prikazujemo kako se koristi `\n` za pravljenje novih redova unutar prompta kako bi instruisali AI da napravi kompleksniji dokument.
+
+```json
+[
+  {
+    "title": "Detaljan plan časa (5ES model)",
+    "prompt": "Kao stručnjak za metodiku nastave, napiši detaljan plan časa za predmet {subject} koristeći 5E model (Engage, Explore, Explain, Elaborate, Evaluate).\n\nTema: {topic}\nLekcija: {lesson}\nUzrast: {audience}\nCiljevi: {outcomes}\nTip časa: {style}\nJezik za generisanje: {language}\n\nPlan treba da sadrži vremensku raspodelu za čas od 45 minuta i konkretne instrukcije za svaku od 5E faza."
+  },
+  {
+    "title": "Diferencirani zadaci (3 nivoa težine)",
+    "prompt": "Kreiraj set vežbanja za temu '{topic}' (Lekcija: {lesson}), dizajniran za uzrast '{audience}'.\nZahtevam 3 zadatka:\n1. Osnovni nivo (reprodukcija znanja)\n2. Srednji nivo (primena na novom primeru)\n3. Napredni nivo (kritičko razmišljanje ili kreiranje nečeg novog)\n\nFokusiraj se pre svega na ostvarivanje ovog ishoda: {outcomes}"
+  }
+]
+```
+
+**Šta se dešava u praksi?**
+Ako administrator kopira ovaj drugi primer u polje **Predefined templates (JSON)** i sačuva postavke, nastavnik će videti "Detaljan plan časa (5ES model)" u dropdown-u. 
+
+Ako nastavnik prethodno unese "Biologija" u polje **Predmet** i klikne na ovaj šablon, `textarea` za prompt će se trenutno osvežiti i `{subject}` će zameniti rečju "Biologija". Nastavnik onda samo pritisne **"Send to AI"** – štedeći sebi kucanje složenih struktura!
+
 ## Usage
 
 1. Open the TinyMCE editor (e.g., in a Course Page, Page resource, or Assignment).
