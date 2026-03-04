@@ -255,7 +255,6 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
                     while (!streamResult.done) {
                         buffer += decoder.decode(streamResult.value, {stream: true});
                         processLines();
-                        // eslint-disable-next-line no-await-in-loop
                         streamResult = await reader.read();
                     }
                     if (buffer.length > 0) {
