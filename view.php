@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+
 
 if ((isset($_GET['action']) && $_GET['action'] === 'stream') || (isset($_POST['action']) && $_POST['action'] === 'stream')) {
     define('NO_DEBUG_DISPLAY', true);
