@@ -445,7 +445,7 @@ class helper {
                 'prompt' => 'Create a set of 5 questions based on Bloom\'s Taxonomy for: \n' .
                            'Topic: {topic}\n' .
                            'Audience: {audience}\n' .
-                           'Outcomes: {outcomes}'
+                           'Outcomes: {outcomes}',
             ],
             (object)[
                 'title' => 'Lesson Plan Draft',
@@ -453,18 +453,18 @@ class helper {
                            'Subject: {subject}\n' .
                            'Topic: {topic}\n' .
                            'Pedagogical Style: {style}\n' .
-                           'Outcomes: {outcomes}'
+                           'Outcomes: {outcomes}',
             ],
             (object)[
                 'title' => 'Socratic Tutor',
                 'prompt' => 'You are a Socratic tutor. Help the user understand {topic} by asking guiding questions.\n' .
-                           'Current context: {subject}'
+                           'Current context: {subject}',
             ],
             (object)[
                 'title' => 'Executive Summary',
                 'prompt' => 'Provide a concise summary of the key concepts for {topic}, \n' .
-                           'tailored for students in the age range: {audience}.'
-            ]
+                           'tailored for students in the age range: {audience}.',
+            ],
         ];
     }
 

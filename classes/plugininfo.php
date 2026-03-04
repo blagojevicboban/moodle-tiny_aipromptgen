@@ -106,6 +106,5 @@ class plugininfo extends plugin implements plugin_with_buttons, plugin_with_conf
             'activeModel'         => $activemodel,
             'activeProviderLabel' => $activelabel,
         ];
-
     }
 }

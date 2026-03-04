@@ -318,10 +318,12 @@ if ($provider === 'custom') {
     ];
 
     // Bypass SSL checks for local endpoints.
-    if (preg_match(
-        '~^https?://(localhost|127\.0\.0\.1|192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)~i',
-        $endpoint
-    )) {
+    if (
+        preg_match(
+            '~^https?://(localhost|127\.0\.0\.1|192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)~i',
+            $endpoint
+        )
+    ) {
         $options['CURLOPT_SSL_VERIFYPEER'] = false;
         $options['CURLOPT_SSL_VERIFYHOST'] = 0;
     }

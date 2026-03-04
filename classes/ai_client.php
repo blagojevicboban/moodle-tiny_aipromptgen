@@ -294,7 +294,12 @@ class ai_client {
         );
 
         return $this->perform_curl_request(
-            $this->customendpoint, $payload, $headers, 60, $ignoresecurity, 'custom'
+            $this->customendpoint,
+            $payload,
+            $headers,
+            60,
+            $ignoresecurity,
+            'custom'
         );
     }
 
@@ -318,7 +323,14 @@ class ai_client {
         ]);
 
         // Ollama usually runs on local network/localhost, SSL might be self-signed or HTTP.
-        return $this->perform_curl_request($endpoint, $payload, [], 60, true, 'ollama');
+        return $this->perform_curl_request(
+            $endpoint,
+            $payload,
+            [],
+            60,
+            true,
+            'ollama'
+        );
     }
 
     /**
