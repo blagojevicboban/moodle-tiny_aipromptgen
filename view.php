@@ -22,12 +22,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 if ((isset($_GET['action']) && $_GET['action'] === 'stream') || (isset($_POST['action']) && $_POST['action'] === 'stream')) {
     define('NO_DEBUG_DISPLAY', true);
 }
 require_once('../../../../../config.php');
-error_log('STREAM DBG - TOP HIT: ' . optional_param('action', '', PARAM_ALPHA) . ' GET: ' . json_encode($_GET) . ' POST: ' . json_encode($_POST));
-error_log('view.php HIT: method=' . $_SERVER['REQUEST_METHOD'] . ', action=' . optional_param('action', '', PARAM_ALPHA));
 require_once($CFG->libdir . '/adminlib.php');
 require_once(__DIR__ . '/classes/form/prompt_form.php');
 
@@ -46,14 +46,14 @@ if (optional_param('action', '', PARAM_ALPHA) === 'stream') {
         require_sesskey();
         require_once(__DIR__ . '/stream.php');
     } catch (\Throwable $e) {
-        // Fallback if SSE headers aren't sent yet
+        // Fallback if SSE headers aren't sent yet.
+        // Ensure Content-Type is set for SSE.
         if (!headers_sent()) {
             header('Content-Type: text/event-stream');
         }
-        echo "event: error\n";
-        echo "data: Moodle error: " . $e->getMessage() . "\n\n";
-        echo "event: done\n";
-        echo "data: [DONE]\n\n";
+        // Send the error event.
+        tiny_aipromptgen_send_event('Moodle error: ' . $e->getMessage(), 'error');
+        tiny_aipromptgen_send_event('[DONE]', 'done');
     }
     exit;
 }
