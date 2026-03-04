@@ -34,6 +34,7 @@
 require_once(__DIR__ . '/../../../../../config.php');
 
 $courseid = optional_param('courseid', 0, PARAM_INT);
+require_login($courseid);
 $provider = optional_param('provider', 'ollama', PARAM_ALPHA);
 
 // Disable buffering for streaming.

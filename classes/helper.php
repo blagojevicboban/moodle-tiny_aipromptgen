@@ -481,7 +481,7 @@ class helper {
         }
 
         global $SESSION;
-        
+
         $key = 'tiny_aipromptgen_requests_' . date('YmdH'); // Hourly window.
         $current = isset($SESSION->{$key}) ? $SESSION->{$key} : 0;
 
