@@ -251,18 +251,15 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
                     }
                     scrollToResponse();
 
-                    // Modern async iteration over the stream.
-                    while (true) {
+                    let streamResult = await reader.read();
+                    while (!streamResult.done) {
+                        buffer += decoder.decode(streamResult.value, {stream: true});
+                        processLines();
                         // eslint-disable-next-line no-await-in-loop
-                        const result = await reader.read();
-                        if (result.done) {
-                            if (buffer.length > 0) {
-                                buffer += '\n\n';
-                                processLines();
-                            }
-                            break;
-                        }
-                        buffer += decoder.decode(result.value, {stream: true});
+                        streamResult = await reader.read();
+                    }
+                    if (buffer.length > 0) {
+                        buffer += '\n\n';
                         processLines();
                     }
 
