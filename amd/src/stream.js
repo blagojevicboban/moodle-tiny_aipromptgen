@@ -137,15 +137,19 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
             formData.append('sesskey', M.cfg.sesskey);
 
             const modalStatus = document.getElementById('ai4t-modal-status');
+            const timeoutMs = 30000;
+            const decoder = new TextDecoder('utf-8');
+
             let first = true;
             let lastActivity = Date.now();
-            const timeoutMs = 30000;
             let reader = null;
-            const decoder = new TextDecoder('utf-8');
             let buffer = '';
             let currentEvent = 'message';
             let currentData = '';
 
+            /**
+             * Internal helper to handle SSE lines from the buffer.
+             */
             const processLines = function() {
                 const lines = buffer.split(/\r?\n/);
                 buffer = lines.pop(); // Keep partial line.
@@ -199,22 +203,6 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
                 });
             };
 
-            const pump = function() {
-                // eslint-disable-next-line promise/no-nesting
-                return reader.read().then(function(result) {
-                    if (result.done) {
-                        if (buffer.length > 0) {
-                            buffer += '\n\n'; // Force flush.
-                            processLines();
-                        }
-                        return null;
-                    }
-                    buffer += decoder.decode(result.value, {stream: true});
-                    processLines();
-                    return pump();
-                });
-            };
-
             const checkTimeout = setInterval(function() {
                 if (Date.now() - lastActivity > timeoutMs) {
                     updateElTextSync(statusEl, 'status_timeout');
@@ -229,66 +217,86 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
                 }
             }, 2000);
 
-            // eslint-disable-next-line promise/no-nesting
-            return fetch(base, {
-                method: 'POST',
-                body: formData,
-                credentials: 'same-origin'
-            }).then(function(response) {
-                if (!response.ok) {
-                    return response.text().then(function(text) {
+            // Using an async loop to satisfy Moodle's Grunt linting (no promise nesting).
+            const runStream = async function() {
+                try {
+                    const response = await fetch(base, {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'same-origin'
+                    });
+
+                    if (!response.ok) {
+                        const text = await response.text();
                         const errmsg = 'HTTP Error: ' + response.status + ' ' + response.statusText + ' | URL: ' + base;
                         throw new Error(errmsg + ' | Body: ' + text.substring(0, 150));
-                    });
-                }
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('text/event-stream')) {
-                    return response.text().then(function(text) {
+                    }
+
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('text/event-stream')) {
+                        const text = await response.text();
                         const errmsg = 'Invalid content type from server: ' + (contentType || 'none') + ' | URL: ' + base;
                         throw new Error(errmsg + ' | Body: ' + text.substring(0, 1000));
-                    });
-                }
-                if (!response.body) {
-                    throw new Error('ReadableStream not supported');
-                }
-                reader = response.body.getReader();
+                    }
 
-                updateElTextSync(statusEl, 'status_started');
-                if (modalStatus) {
-                    updateElTextSync(modalStatus, 'status_receiving');
-                }
-                scrollToResponse();
+                    if (!response.body) {
+                        throw new Error('ReadableStream not supported');
+                    }
 
-                return pump();
-            }).then(function() {
-                clearInterval(checkTimeout);
-                updateElTextSync(statusEl, 'status_done');
-                if (modalStatus) {
-                    updateElTextSync(modalStatus, 'status_finished');
-                    modalStatus.style.color = '#28a745';
+                    reader = response.body.getReader();
+
+                    updateElTextSync(statusEl, 'status_started');
+                    if (modalStatus) {
+                        updateElTextSync(modalStatus, 'status_receiving');
+                    }
+                    scrollToResponse();
+
+                    // Modern async iteration over the stream.
+                    while (true) {
+                        // eslint-disable-next-line no-await-in-loop
+                        const result = await reader.read();
+                        if (result.done) {
+                            if (buffer.length > 0) {
+                                buffer += '\n\n';
+                                processLines();
+                            }
+                            break;
+                        }
+                        buffer += decoder.decode(result.value, {stream: true});
+                        processLines();
+                    }
+
+                    // Done path.
+                    clearInterval(checkTimeout);
+                    updateElTextSync(statusEl, 'status_done');
+                    if (modalStatus) {
+                        updateElTextSync(modalStatus, 'status_finished');
+                        modalStatus.style.color = '#28a745';
+                    }
+                    if (resp) {
+                        resp.removeAttribute('aria-busy');
+                        resp.textContent = Markdown.autofixMarkdown(resp.textContent);
+                    }
+                    scrollToResponse();
+
+                } catch (err) {
+                    clearInterval(checkTimeout);
+                    if (resp) {
+                        const errStr = M.util.get_string('status_error', 'tiny_aipromptgen');
+                        resp.textContent += '\n[' + errStr + '] ' + err.message;
+                    }
+                    updateElTextSync(statusEl, 'status_error');
+                    if (modalStatus) {
+                        updateElTextSync(modalStatus, 'status_error_occurred');
+                        modalStatus.style.color = '#dc3545';
+                    }
+                    scrollToResponse();
                 }
-                if (resp) {
-                    resp.removeAttribute('aria-busy');
-                    resp.textContent = Markdown.autofixMarkdown(resp.textContent);
-                }
-                scrollToResponse();
-                return null;
-            }).catch(function(err) {
-                clearInterval(checkTimeout);
-                if (resp) {
-                    const errStr = M.util.get_string('status_error', 'tiny_aipromptgen');
-                    resp.textContent += '\n[' + errStr + '] ' + err.message;
-                }
-                updateElTextSync(statusEl, 'status_error');
-                if (modalStatus) {
-                    updateElTextSync(modalStatus, 'status_error_occurred');
-                    modalStatus.style.color = '#dc3545';
-                }
-                scrollToResponse();
-                return null;
-            });
+            };
+
+            return runStream();
         }).catch(function() {
-            // Handle pre-cache failure.
+            // Handle pre-cache or execution failure.
             return null;
         });
     };
