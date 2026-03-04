@@ -44,11 +44,32 @@ class ai_client {
     /** @var string Claude Model */
     private $claudemodel;
 
+    /** @var string DeepSeek API Key */
+    private $deepseekkey;
+
+    /** @var string DeepSeek Model */
+    private $deepseekmodel;
+
+    /** @var string Custom API Endpoint */
+    private $customendpoint;
+
+    /** @var string Custom API Key */
+    private $customapikey;
+
+    /** @var string Custom API Model */
+    private $custommodel;
+
     /** @var string Ollama Endpoint */
     private $ollamaendpoint;
 
     /** @var string Ollama Model */
     private $ollamamodel;
+
+    /** @var float AI response temperature (0.0 – 2.0) */
+    private $temperature;
+
+    /** @var int Maximum tokens in AI response */
+    private $maxtokens;
 
     /**
      * Constructor. Retrieves configuration settings.
@@ -63,14 +84,40 @@ class ai_client {
         $this->claudekey = get_config('tiny_aipromptgen', 'claude_apikey');
         $this->claudemodel = get_config('tiny_aipromptgen', 'claude_model') ?: 'claude-3-5-sonnet-20240620';
 
+        $this->deepseekkey = get_config('tiny_aipromptgen', 'deepseek_apikey');
+        $this->deepseekmodel = get_config('tiny_aipromptgen', 'deepseek_model') ?: 'deepseek-chat';
+
+        $this->customendpoint = get_config('tiny_aipromptgen', 'custom_endpoint');
+        $this->customapikey = get_config('tiny_aipromptgen', 'custom_apikey');
+        $this->custommodel = get_config('tiny_aipromptgen', 'custom_model') ?: 'custom-model';
+
         $this->ollamaendpoint = get_config('tiny_aipromptgen', 'ollama_endpoint');
         $this->ollamamodel = get_config('tiny_aipromptgen', 'ollama_model') ?: 'llama3';
+
+        $rawtemp = get_config('tiny_aipromptgen', 'temperature');
+        $this->temperature = ($rawtemp !== false && $rawtemp !== '') ? (float)$rawtemp : 0.7;
+
+        $rawmax = get_config('tiny_aipromptgen', 'max_tokens');
+        $this->maxtokens = ($rawmax !== false && $rawmax !== '') ? (int)$rawmax : 1024;
+    }
+
+    /**
+     * Get the configured system prompt, falling back to the default lang string.
+     *
+     * @return string
+     */
+    private function get_system_prompt(): string {
+        $configured = get_config('tiny_aipromptgen', 'system_prompt');
+        if (!empty($configured)) {
+            return (string)$configured;
+        }
+        return get_string('system_role', 'tiny_aipromptgen');
     }
 
     /**
      * Send a prompt to the specified provider.
      *
-     * @param string $provider 'openai', 'gemini', 'claude' or 'ollama'
+     * @param string $provider 'openai', 'gemini', 'claude', 'deepseek', 'custom' or 'ollama'
      * @param string $prompt The prompt text
      * @return string The AI response text
      */
@@ -82,6 +129,10 @@ class ai_client {
                 return $this->send_to_gemini($prompt);
             case 'claude':
                 return $this->send_to_claude($prompt);
+            case 'deepseek':
+                return $this->send_to_deepseek($prompt);
+            case 'custom':
+                return $this->send_to_custom($prompt);
             case 'ollama':
                 return $this->send_to_ollama($prompt);
             default:
@@ -109,10 +160,11 @@ class ai_client {
         $payload = json_encode([
             'model' => $this->openaimodel,
             'messages' => [
-                ['role' => 'system', 'content' => get_string('system_role', 'tiny_aipromptgen')],
+                ['role' => 'system', 'content' => $this->get_system_prompt()],
                 ['role' => 'user', 'content' => $prompt],
             ],
-            'temperature' => 0.7,
+            'temperature' => $this->temperature,
+            'max_tokens' => $this->maxtokens,
         ]);
 
         return $this->perform_curl_request($endpoint, $payload, $headers, 60, false, 'openai');
@@ -138,10 +190,11 @@ class ai_client {
                 ['parts' => [['text' => $prompt]]],
             ],
             'system_instruction' => [
-                'parts' => [['text' => get_string('system_role', 'tiny_aipromptgen')]],
+                'parts' => [['text' => $this->get_system_prompt()]],
             ],
             'generationConfig' => [
-                'temperature' => 0.7,
+                'temperature' => $this->temperature,
+                'maxOutputTokens' => $this->maxtokens,
             ],
         ]);
 
@@ -168,15 +221,81 @@ class ai_client {
 
         $payload = json_encode([
             'model' => $this->claudemodel,
-            'max_tokens' => 4096,
-            'system' => get_string('system_role', 'tiny_aipromptgen'),
+            'max_tokens' => $this->maxtokens,
+            'system' => $this->get_system_prompt(),
             'messages' => [
                 ['role' => 'user', 'content' => $prompt],
             ],
-            'temperature' => 0.7,
+            'temperature' => $this->temperature,
         ]);
 
         return $this->perform_curl_request($endpoint, $payload, $headers, 60, false, 'claude');
+    }
+
+    /**
+     * Send request to DeepSeek (OpenAI-compatible API).
+     *
+     * @param string $prompt
+     * @return string
+     */
+    private function send_to_deepseek(string $prompt): string {
+        if (empty($this->deepseekkey)) {
+            return get_string('error_nodeepseek_apikey', 'tiny_aipromptgen');
+        }
+
+        $endpoint = 'https://api.deepseek.com/v1/chat/completions';
+        $headers = [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $this->deepseekkey,
+        ];
+
+        $payload = json_encode([
+            'model' => $this->deepseekmodel,
+            'messages' => [
+                ['role' => 'system', 'content' => $this->get_system_prompt()],
+                ['role' => 'user', 'content' => $prompt],
+            ],
+            'temperature' => $this->temperature,
+            'max_tokens' => $this->maxtokens,
+        ]);
+
+        return $this->perform_curl_request($endpoint, $payload, $headers, 60, false, 'deepseek');
+    }
+
+    /**
+     * Send request to a Custom OpenAI-compatible endpoint.
+     *
+     * @param string $prompt
+     * @return string
+     */
+    private function send_to_custom(string $prompt): string {
+        if (empty($this->customendpoint)) {
+            return get_string('error_nocustom_endpoint', 'tiny_aipromptgen');
+        }
+
+        $headers = ['Content-Type: application/json'];
+        if (!empty($this->customapikey)) {
+            $headers[] = 'Authorization: Bearer ' . $this->customapikey;
+        }
+
+        $payload = json_encode([
+            'model' => $this->custommodel,
+            'messages' => [
+                ['role' => 'system', 'content' => $this->get_system_prompt()],
+                ['role' => 'user', 'content' => $prompt],
+            ],
+            'temperature' => $this->temperature,
+            'max_tokens' => $this->maxtokens,
+        ]);
+
+        $ignoresecurity = (bool)preg_match(
+            '~^https?://(localhost|127\.0\.0\.1|192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)~i',
+            $this->customendpoint
+        );
+
+        return $this->perform_curl_request(
+            $this->customendpoint, $payload, $headers, 60, $ignoresecurity, 'custom'
+        );
     }
 
     /**
@@ -195,7 +314,7 @@ class ai_client {
             'model' => $this->ollamamodel,
             'prompt' => $prompt,
             'stream' => false,
-            'options' => ['num_predict' => 512, 'temperature' => 0.7],
+            'options' => ['num_predict' => $this->maxtokens, 'temperature' => $this->temperature],
         ]);
 
         // Ollama usually runs on local network/localhost, SSL might be self-signed or HTTP.
@@ -260,6 +379,10 @@ class ai_client {
         } else if ($provider === 'claude') {
             if (isset($json['content'][0]['text'])) {
                 return $json['content'][0]['text'];
+            }
+        } else if ($provider === 'deepseek' || $provider === 'custom') {
+            if (isset($json['choices'][0]['message']['content'])) {
+                return $json['choices'][0]['message']['content'];
             }
         }
 

@@ -73,10 +73,39 @@ class plugininfo extends plugin implements plugin_with_buttons, plugin_with_conf
     ): array {
         global $PAGE;
 
-        return [
-            'canView' => has_capability('tiny/aipromptgen:use', $context),
-            'blockUrl' => (new \moodle_url('/lib/editor/tiny/plugins/aipromptgen/view.php'))->out(false),
-            'sesskey' => sesskey(),
+        // Determine the active provider and its display label.
+        $provider = get_config('tiny_aipromptgen', 'provider') ?: 'openai';
+
+        $providerlabels = [
+            'openai'   => 'OpenAI',
+            'gemini'   => 'Gemini',
+            'claude'   => 'Claude',
+            'deepseek' => 'DeepSeek',
+            'ollama'   => 'Ollama',
+            'custom'   => 'Custom API',
         ];
+
+        $modelmap = [
+            'openai'   => get_config('tiny_aipromptgen', 'openai_model') ?: 'gpt-3.5-turbo',
+            'gemini'   => get_config('tiny_aipromptgen', 'gemini_model') ?: 'gemini-1.5-flash',
+            'claude'   => get_config('tiny_aipromptgen', 'claude_model') ?: 'claude-3-5-sonnet-20240620',
+            'deepseek' => get_config('tiny_aipromptgen', 'deepseek_model') ?: 'deepseek-chat',
+            'ollama'   => get_config('tiny_aipromptgen', 'ollama_model') ?: 'llama3',
+            'custom'   => get_config('tiny_aipromptgen', 'custom_model') ?: 'custom',
+        ];
+
+        $activemodel = $modelmap[$provider] ?? '';
+        $activelabel = ($providerlabels[$provider] ?? ucfirst($provider))
+            . ($activemodel ? ' · ' . $activemodel : '');
+
+        return [
+            'canView'             => has_capability('tiny/aipromptgen:use', $context),
+            'blockUrl'            => (new \moodle_url('/lib/editor/tiny/plugins/aipromptgen/view.php'))->out(false),
+            'sesskey'             => sesskey(),
+            'activeProvider'      => $provider,
+            'activeModel'         => $activemodel,
+            'activeProviderLabel' => $activelabel,
+        ];
+
     }
 }

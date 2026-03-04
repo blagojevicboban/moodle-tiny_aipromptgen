@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.7] - 2026-03-04
+### Added
+- **Predefined Quick Templates**: Admin-configurable pedagogical templates for one-click prompt generation. Includes 4 built-in defaults (Bloom's Taxonomy, Lesson Plan, Socratic Tutor, Executive Summary).
+- **Rate Limiting (Anti-abuse)**: Configurable maximum AI requests per user per hour (default: 50) using Moodle's session cache.
+- **Dynamic Toolbar Tooltip**: Shows the active AI provider and model directly on the TinyMCE toolbar button.
+- **Provider Persistence**: Remembers the teacher's preferred AI provider via `localStorage`.
+
+## [1.6] - 2026-03-04
+
+### Added
+- Configurable AI Temperature setting (0.0–2.0, default 0.7) applied to all providers.
+- Configurable Max Tokens setting (default 1024) applied to all providers.
+  - Maps to `max_tokens` for OpenAI/DeepSeek/Claude/Custom, `maxOutputTokens` for Gemini, `num_predict` for Ollama.
+
+## [1.5] - 2026-03-04
+
+### Added
+- Added support for DeepSeek API (deepseek-chat, deepseek-reasoner models).
+- Added support for Custom OpenAI-compatible API endpoints (LM Studio, Groq, OpenRouter,
+  Together AI, vLLM, and any other service following the OpenAI API format).
+- Real-time SSE streaming for DeepSeek and Custom API providers.
+- New admin settings for DeepSeek API key and model.
+- New admin settings for Custom API endpoint URL, API key (optional), and model name.
+- Automatic SSL bypass for local/private-network Custom API endpoints.
+
 ## [1.4] - 2026-03-04
 
 ### Added

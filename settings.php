@@ -26,6 +26,49 @@
 defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
+    // System prompt (applies to all providers).
+    $settings->add(new admin_setting_configtextarea(
+        'tiny_aipromptgen/system_prompt',
+        get_string('setting_system_prompt', 'tiny_aipromptgen'),
+        get_string('setting_system_prompt_desc', 'tiny_aipromptgen'),
+        ''
+    ));
+
+    // Predefined templates (JSON).
+    $settings->add(new admin_setting_configtextarea(
+        'tiny_aipromptgen/templates',
+        get_string('setting_templates', 'tiny_aipromptgen'),
+        get_string('setting_templates_desc', 'tiny_aipromptgen'),
+        ''
+    ));
+
+    // Temperature (0.0 - 2.0).
+    $settings->add(new admin_setting_configtext(
+        'tiny_aipromptgen/temperature',
+        get_string('setting_temperature', 'tiny_aipromptgen'),
+        get_string('setting_temperature_desc', 'tiny_aipromptgen'),
+        '0.7',
+        PARAM_FLOAT
+    ));
+
+    // Max tokens.
+    $settings->add(new admin_setting_configtext(
+        'tiny_aipromptgen/max_tokens',
+        get_string('setting_max_tokens', 'tiny_aipromptgen'),
+        get_string('setting_max_tokens_desc', 'tiny_aipromptgen'),
+        '1024',
+        PARAM_INT
+    ));
+
+    // Rate limit (requests per hour).
+    $settings->add(new admin_setting_configtext(
+        'tiny_aipromptgen/rate_limit',
+        get_string('setting_rate_limit', 'tiny_aipromptgen'),
+        get_string('setting_rate_limit_desc', 'tiny_aipromptgen'),
+        '50',
+        PARAM_INT
+    ));
+
     // OpenAI API key (password-unmask field).
     $settings->add(new admin_setting_configpasswordunmask(
         'tiny_aipromptgen/openai_apikey',
@@ -74,6 +117,49 @@ if ($ADMIN->fulltree) {
         get_string('setting_claude_model', 'tiny_aipromptgen'),
         get_string('setting_claude_model_desc', 'tiny_aipromptgen'),
         'claude-3-5-sonnet-20240620',
+        PARAM_TEXT
+    ));
+
+    // DeepSeek API key.
+    $settings->add(new admin_setting_configpasswordunmask(
+        'tiny_aipromptgen/deepseek_apikey',
+        get_string('setting_deepseek_apikey', 'tiny_aipromptgen'),
+        get_string('setting_deepseek_apikey_desc', 'tiny_aipromptgen'),
+        ''
+    ));
+
+    // Default DeepSeek model.
+    $settings->add(new admin_setting_configtext(
+        'tiny_aipromptgen/deepseek_model',
+        get_string('setting_deepseek_model', 'tiny_aipromptgen'),
+        get_string('setting_deepseek_model_desc', 'tiny_aipromptgen'),
+        'deepseek-chat',
+        PARAM_TEXT
+    ));
+
+    // Custom API (OpenAI-compatible) endpoint.
+    $settings->add(new admin_setting_configtext(
+        'tiny_aipromptgen/custom_endpoint',
+        get_string('setting_custom_endpoint', 'tiny_aipromptgen'),
+        get_string('setting_custom_endpoint_desc', 'tiny_aipromptgen'),
+        '',
+        PARAM_URL
+    ));
+
+    // Custom API key (optional).
+    $settings->add(new admin_setting_configpasswordunmask(
+        'tiny_aipromptgen/custom_apikey',
+        get_string('setting_custom_apikey', 'tiny_aipromptgen'),
+        get_string('setting_custom_apikey_desc', 'tiny_aipromptgen'),
+        ''
+    ));
+
+    // Custom API model name.
+    $settings->add(new admin_setting_configtext(
+        'tiny_aipromptgen/custom_model',
+        get_string('setting_custom_model', 'tiny_aipromptgen'),
+        get_string('setting_custom_model_desc', 'tiny_aipromptgen'),
+        '',
         PARAM_TEXT
     ));
 

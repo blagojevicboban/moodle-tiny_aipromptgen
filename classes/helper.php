@@ -423,4 +423,80 @@ class helper {
                 return '📄';
         }
     }
+
+    /**
+     * Get predefined prompt templates.
+     *
+     * @return array List of templates (objects with title and prompt).
+     */
+    public static function get_templates(): array {
+        $json = get_config('tiny_aipromptgen', 'templates');
+        if (!empty($json)) {
+            $templates = json_decode($json);
+            if (is_array($templates)) {
+                return $templates;
+            }
+        }
+
+        // Default templates if none configured.
+        return [
+            (object)[
+                'title' => 'Bloom\'s Taxonomy Questions',
+                'prompt' => 'Create a set of 5 questions based on Bloom\'s Taxonomy for: \n' .
+                           'Topic: {topic}\n' .
+                           'Audience: {audience}\n' .
+                           'Outcomes: {outcomes}'
+            ],
+            (object)[
+                'title' => 'Lesson Plan Draft',
+                'prompt' => 'Generate a structured lesson plan for a 45-minute session.\n' .
+                           'Subject: {subject}\n' .
+                           'Topic: {topic}\n' .
+                           'Pedagogical Style: {style}\n' .
+                           'Outcomes: {outcomes}'
+            ],
+            (object)[
+                'title' => 'Socratic Tutor',
+                'prompt' => 'You are a Socratic tutor. Help the user understand {topic} by asking guiding questions.\n' .
+                           'Current context: {subject}'
+            ],
+            (object)[
+                'title' => 'Executive Summary',
+                'prompt' => 'Provide a concise summary of the key concepts for {topic}, \n' .
+                           'tailored for students in the age range: {audience}.'
+            ]
+        ];
+    }
+
+    /**
+     * Check if the current user has exceeded the AI request rate limit.
+     *
+     * @param bool $increment Whether to increment the request counter if limit is not exceeded.
+     * @return bool True if allowed, false if limit exceeded.
+     */
+    public static function check_rate_limit(bool $increment = true): bool {
+        $limit = (int) get_config('tiny_aipromptgen', 'rate_limit');
+        if ($limit <= 0) {
+            return true; // Disabled.
+        }
+
+        // Use Moodle Cache (session level is sufficient for anti-abuse within a session).
+        $cache = \cache::make('core', 'session');
+        $key = 'tiny_aipromptgen_requests_' . date('YmdH'); // Hourly window.
+        $current = $cache->get($key);
+
+        if ($current === false) {
+            $current = 0;
+        }
+
+        if ($current >= $limit) {
+            return false;
+        }
+
+        if ($increment) {
+            $cache->set($key, $current + 1);
+        }
+
+        return true;
+    }
 }

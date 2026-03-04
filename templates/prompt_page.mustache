@@ -81,6 +81,16 @@
         <input type="hidden" name="sesskey" value="{{sesskey}}">
         <input type="hidden" name="sendto" id="ai4t-sendto">
         
+        <div class="form-group mb-3">
+            <label for="ai4t-template-select">{{#str}} form_templates_label, tiny_aipromptgen{{/str}}</label>
+            <select id="ai4t-template-select" class="custom-select w-100">
+                <option value="">-- {{#str}} select, moodle {{/str}} --</option>
+                {{#templates}}
+                    <option value="{{prompt}}">{{title}}</option>
+                {{/templates}}
+            </select>
+        </div>
+
         <textarea id="ai4t-generated" name="ai4t_generated" rows="12" class="form-control" style="width:100%;" title="{{#str}} tooltip_editprompt, tiny_aipromptgen{{/str}}">{{generatedprompt}}</textarea>
         <br>
         

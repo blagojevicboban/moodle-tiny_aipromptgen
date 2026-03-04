@@ -33,7 +33,10 @@ $string['classtype_project'] = 'Project-based';
 $string['classtype_review'] = 'Review/Revision';
 $string['default_language'] = 'English';
 $string['error_noapikey'] = 'OpenAI API key is not configured in settings.';
-$string['error_noclaudeapikey'] = 'Claude API key is not configured in settings.';
+$string['error_noclaudeapikey'] = 'No Claude API key found in configuration.';
+$string['error_ratelimit'] = 'You have exceeded the maximum number of AI requests allowed per hour. Please try again later.';
+$string['error_nocustom_endpoint'] = 'Custom API endpoint is not configured in settings.';
+$string['error_nodeepseek_apikey'] = 'DeepSeek API key is not configured in settings.';
 $string['error_noendpoint'] = 'Ollama endpoint is not configured in settings.';
 $string['error_nogeminiapikey'] = 'Gemini API key is not configured in settings.';
 $string['form_agebrowse'] = 'Browse age or range';
@@ -69,8 +72,9 @@ $string['form_sendtoai'] = 'Send to AI';
 $string['form_sendtochatgpt'] = 'Send to ChatGPT';
 $string['form_subjectlabel'] = 'Subject';
 $string['form_submit'] = 'Generate prompt';
-$string['form_topicbrowse'] = 'Browse course sections';
-$string['form_topiclabel'] = 'Teaching topic (area)';
+$string['form_subjectplaceholder'] = 'e.g. Mathematics, Biology...';
+$string['form_templates_label'] = 'Quick Templates';
+$string['form_topiclabel'] = 'Topic/Section';
 $string['help_agerange'] = 'Type an age or grade, or click Browse to pick exact age or range';
 $string['help_audience'] = 'Type an audience or click Browse to pick';
 $string['help_classtype'] = 'Type a class type or click Browse to pick from a list';
@@ -133,12 +137,28 @@ $string['setting_claude_apikey'] = 'Claude API key';
 $string['setting_claude_apikey_desc'] = 'API key for Anthropic Claude. Stored in Moodle configuration.';
 $string['setting_claude_model'] = 'Claude model';
 $string['setting_claude_model_desc'] = 'Model to use for Claude (e.g. claude-3-5-sonnet-20240620, claude-3-haiku-20240307).';
+$string['setting_custom_apikey'] = 'Custom API key (optional)';
+$string['setting_custom_apikey_desc'] = 'API key for the custom endpoint. Leave empty if not required.';
+$string['setting_custom_endpoint'] = 'Custom API endpoint';
+$string['setting_custom_endpoint_desc'] =
+    'Full URL of a custom OpenAI-compatible endpoint (e.g. http://localhost:1234/v1/chat/completions).';
+$string['setting_custom_model'] = 'Custom API model';
+$string['setting_custom_model_desc'] = 'Model name to send to the custom endpoint.';
+$string['setting_deepseek_apikey'] = 'DeepSeek API key';
+$string['setting_deepseek_apikey_desc'] = 'API key for DeepSeek. Obtain from https://platform.deepseek.com/';
+$string['setting_deepseek_model'] = 'DeepSeek model';
+$string['setting_deepseek_model_desc'] = 'Model to use for DeepSeek (e.g. deepseek-chat, deepseek-reasoner).';
 $string['setting_gemini_apikey'] = 'Gemini API key';
 $string['setting_gemini_apikey_desc'] = 'API key for Google Gemini. Stored in Moodle configuration.';
 $string['setting_gemini_model'] = 'Gemini model';
 $string['setting_gemini_model_desc'] = 'Model to use for Gemini (e.g. gemini-1.5-flash, gemini-1.5-pro).';
 $string['setting_model'] = 'OpenAI model';
 $string['setting_model_desc'] = 'Chat completion model to use when sending the prompt to ChatGPT. Default is gpt-3.5-turbo.';
+$string['setting_max_tokens'] = 'Max tokens';
+$string['setting_max_tokens_desc'] =
+    'Maximum number of tokens (words/characters) in the AI response. ' .
+    'Default: 1024. Higher values allow longer responses but cost more. ' .
+    'Note: for Gemini this controls maxOutputTokens; for Ollama it controls num_predict.';
 $string['setting_ollama_endpoint'] = 'Ollama endpoint';
 $string['setting_ollama_endpoint_desc'] = 'Base URL of the local Ollama server (e.g. http://localhost:11434).';
 $string['setting_ollama_model'] = 'Ollama model';
@@ -148,7 +168,28 @@ $string['setting_ollama_num_predict_desc'] = 'Maximum tokens to generate (num_pr
 $string['setting_ollama_schema'] = 'Ollama structured output schema';
 $string['setting_ollama_schema_desc'] = 'Optional JSON Schema to constrain Ollama responses (leave empty for free-form text).';
 $string['setting_ollama_timeout'] = 'Ollama request timeout (seconds)';
-$string['setting_ollama_timeout_desc'] = 'Maximum time to wait for Ollama response. Increase for large outputs.';
+$string['setting_ollama_timeout_desc'] = 'Maximum time in seconds to wait for an Ollama response.';
+$string['setting_rate_limit'] = 'Rate limit (per hour)';
+$string['setting_rate_limit_desc'] = 'Number of AI requests allowed per user per hour. Set to 0 to disable limiting. Default: 50.';
+$string['setting_system_prompt'] = 'System prompt';
+$string['setting_templates'] = 'Predefined templates (JSON)';
+$string['setting_templates_desc'] = 'A JSON array of templates. Each template should be an object with "title" and "prompt". If empty, built-in defaults are used.<br><br><b>Available placeholders:</b> {subject}, {topic}, {lesson}, {audience}, {outcomes}, {style}, {purpose}, {language}.<br><br><b>Example 1 (Simple):</b><br><pre>[
+  {
+    "title": "Glossary",
+    "prompt": "Create a list of 10 key terms for {subject}, topic: {topic}. Audience: {audience}."
+  }
+]</pre><br><b>Example 2 (Complex with newlines):</b><br><pre>[
+  {
+    "title": "Detailed Lesson Plan",
+    "prompt": "Write a 5E lesson plan for {subject}.\n\nTopic: {topic}\nOutcomes: {outcomes}"
+  }
+]</pre>';
+$string['setting_temperature'] = 'Temperature';
+$string['setting_temperature_desc'] =
+    'Controls randomness of AI responses (0.0 = deterministic, 2.0 = very creative). Default: 0.7.';
+$string['setting_system_prompt_desc'] =
+    'Custom instruction sent to the AI before every request (applies to all providers). ' .
+    'Leave empty to use the built-in default: "You are a helpful assistant." Increase for large outputs.';
 $string['status_connecting'] = 'Connecting...';
 $string['status_copiedclipboard'] = 'Copied to clipboard!';
 $string['status_copiedrichtext'] = 'Copied as Rich Text!';

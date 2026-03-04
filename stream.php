@@ -69,12 +69,29 @@ if ($rawprompt === '') {
     $rawprompt = "Topic: {$topic}\nLesson: {$lesson}\nOutcomes: {$outcomes}";
 }
 
-// Ollama, Gemini and Claude streaming implemented here.
-if (!in_array($provider, ['ollama', 'gemini', 'claude'])) {
+// Rate limiting.
+if (!\tiny_aipromptgen\helper::check_rate_limit()) {
+    tiny_aipromptgen_send_event(get_string('error_ratelimit', 'tiny_aipromptgen'), 'error');
+    tiny_aipromptgen_send_event('[DONE]', 'done');
+    exit;
+}
+
+// Ollama, Gemini, Claude, DeepSeek and Custom API streaming implemented here.
+if (!in_array($provider, ['ollama', 'gemini', 'claude', 'deepseek', 'custom'])) {
     tiny_aipromptgen_send_event('Unsupported provider for streaming: ' . $provider, 'error');
     tiny_aipromptgen_send_event('[DONE]', 'done');
     exit;
 }
+
+// Resolve the system prompt (admin-configured or built-in default).
+$configuredsystemprompt = (string)(get_config('tiny_aipromptgen', 'system_prompt') ?? '');
+$systemprompt = $configuredsystemprompt !== '' ? $configuredsystemprompt : 'You are a helpful assistant.';
+
+// Resolve temperature and max tokens.
+$rawtemp = get_config('tiny_aipromptgen', 'temperature');
+$streamtemperature = ($rawtemp !== false && $rawtemp !== '') ? (float)$rawtemp : 0.7;
+$rawmax = get_config('tiny_aipromptgen', 'max_tokens');
+$streammaxtokens = ($rawmax !== false && $rawmax !== '') ? (int)$rawmax : 1024;
 
 if ($provider === 'gemini') {
     $apikey = (string)(get_config('tiny_aipromptgen', 'gemini_apikey') ?? '');
@@ -88,6 +105,11 @@ if ($provider === 'gemini') {
     $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:streamGenerateContent?key={$apikey}";
     $payload = json_encode([
         'contents' => [['parts' => [['text' => $rawprompt]]]],
+        'system_instruction' => ['parts' => [['text' => $systemprompt]]],
+        'generationConfig' => [
+            'temperature' => $streamtemperature,
+            'maxOutputTokens' => $streammaxtokens,
+        ],
     ]);
 
     require_once($CFG->libdir . '/filelib.php');
@@ -134,6 +156,62 @@ if ($provider === 'gemini') {
     exit;
 }
 
+if ($provider === 'deepseek') {
+    $apikey = (string)(get_config('tiny_aipromptgen', 'deepseek_apikey') ?? '');
+    $model = (string)(get_config('tiny_aipromptgen', 'deepseek_model') ?? 'deepseek-chat');
+    if ($apikey === '') {
+        tiny_aipromptgen_send_event('DeepSeek API key not configured', 'error');
+        tiny_aipromptgen_send_event('[DONE]', 'done');
+        exit;
+    }
+
+    $url = 'https://api.deepseek.com/v1/chat/completions';
+    $payload = json_encode([
+        'model' => $model,
+        'messages' => [
+            ['role' => 'system', 'content' => $systemprompt],
+            ['role' => 'user', 'content' => $rawprompt],
+        ],
+        'stream' => true,
+        'temperature' => $streamtemperature,
+        'max_tokens' => $streammaxtokens,
+    ]);
+
+    require_once($CFG->libdir . '/filelib.php');
+    $curl = new curl();
+    $options = [
+        'CURLOPT_HTTPHEADER' => [
+            'Authorization: Bearer ' . $apikey,
+            'Content-Type: application/json',
+        ],
+        'CURLOPT_RETURNTRANSFER' => false,
+        'CURLOPT_WRITEFUNCTION' => function ($ch, $chunk) {
+            static $buffer = '';
+            $buffer .= $chunk;
+            while (($pos = strpos($buffer, "\n")) !== false) {
+                $line = trim(substr($buffer, 0, $pos));
+                $buffer = substr($buffer, $pos + 1);
+                if (strpos($line, 'data: ') === 0) {
+                    $json = substr($line, 6);
+                    if ($json === '[DONE]') {
+                        break;
+                    }
+                    $obj = json_decode($json, true);
+                    if (isset($obj['choices'][0]['delta']['content'])) {
+                        tiny_aipromptgen_send_event($obj['choices'][0]['delta']['content'], 'chunk');
+                    }
+                }
+            }
+            return strlen($chunk);
+        },
+    ];
+
+    tiny_aipromptgen_send_event('DeepSeek streaming start', 'start');
+    $curl->post($url, $payload, $options);
+    tiny_aipromptgen_send_event('[DONE]', 'done');
+    exit;
+}
+
 if ($provider === 'claude') {
     $apikey = (string)(get_config('tiny_aipromptgen', 'claude_apikey') ?? '');
     $model = (string)(get_config('tiny_aipromptgen', 'claude_model') ?? 'claude-3-5-sonnet-20240620');
@@ -146,9 +224,11 @@ if ($provider === 'claude') {
     $url = 'https://api.anthropic.com/v1/messages';
     $payload = json_encode([
         'model' => $model,
-        'max_tokens' => 4096,
+        'max_tokens' => $streammaxtokens,
+        'system' => $systemprompt,
         'messages' => [['role' => 'user', 'content' => $rawprompt]],
         'stream' => true,
+        'temperature' => $streamtemperature,
     ]);
 
     require_once($CFG->libdir . '/filelib.php');
@@ -180,6 +260,74 @@ if ($provider === 'claude') {
 
     tiny_aipromptgen_send_event('Claude streaming start', 'start');
     $curl->post($url, $payload, $options);
+    tiny_aipromptgen_send_event('[DONE]', 'done');
+    exit;
+}
+
+if ($provider === 'custom') {
+    $endpoint = (string)(get_config('tiny_aipromptgen', 'custom_endpoint') ?? '');
+    if ($endpoint === '') {
+        tiny_aipromptgen_send_event('Custom API endpoint not configured', 'error');
+        tiny_aipromptgen_send_event('[DONE]', 'done');
+        exit;
+    }
+
+    $apikey = (string)(get_config('tiny_aipromptgen', 'custom_apikey') ?? '');
+    $model = (string)(get_config('tiny_aipromptgen', 'custom_model') ?? '');
+
+    $payload = json_encode([
+        'model' => $model,
+        'messages' => [
+            ['role' => 'system', 'content' => $systemprompt],
+            ['role' => 'user', 'content' => $rawprompt],
+        ],
+        'stream' => true,
+        'temperature' => $streamtemperature,
+        'max_tokens' => $streammaxtokens,
+    ]);
+
+    $hdrs = ['Content-Type: application/json'];
+    if ($apikey !== '') {
+        $hdrs[] = 'Authorization: Bearer ' . $apikey;
+    }
+
+    require_once($CFG->libdir . '/filelib.php');
+    $curl = new curl();
+    $options = [
+        'CURLOPT_HTTPHEADER' => $hdrs,
+        'CURLOPT_RETURNTRANSFER' => false,
+        'CURLOPT_WRITEFUNCTION' => function ($ch, $chunk) {
+            static $buffer = '';
+            $buffer .= $chunk;
+            while (($pos = strpos($buffer, "\n")) !== false) {
+                $line = trim(substr($buffer, 0, $pos));
+                $buffer = substr($buffer, $pos + 1);
+                if (strpos($line, 'data: ') === 0) {
+                    $json = substr($line, 6);
+                    if ($json === '[DONE]') {
+                        break;
+                    }
+                    $obj = json_decode($json, true);
+                    if (isset($obj['choices'][0]['delta']['content'])) {
+                        tiny_aipromptgen_send_event($obj['choices'][0]['delta']['content'], 'chunk');
+                    }
+                }
+            }
+            return strlen($chunk);
+        },
+    ];
+
+    // Bypass SSL checks for local endpoints.
+    if (preg_match(
+        '~^https?://(localhost|127\.0\.0\.1|192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)~i',
+        $endpoint
+    )) {
+        $options['CURLOPT_SSL_VERIFYPEER'] = false;
+        $options['CURLOPT_SSL_VERIFYHOST'] = 0;
+    }
+
+    tiny_aipromptgen_send_event('Custom API streaming start', 'start');
+    $curl->post($endpoint, $payload, $options);
     tiny_aipromptgen_send_event('[DONE]', 'done');
     exit;
 }

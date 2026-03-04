@@ -85,9 +85,13 @@ $provider = optional_param('sendto', '', PARAM_TEXT);
 
 if (!empty($provider) && !empty($rawprompt) && confirm_sesskey()) {
     $generatedprompt = $rawprompt;
-    if (in_array($provider, ['openai', 'ollama', 'gemini', 'claude'])) {
-        $client = new ai_client();
-        $airesponse = $client->send_request($provider, $generatedprompt);
+    if (in_array($provider, ['openai', 'ollama', 'gemini', 'claude', 'deepseek', 'custom'])) {
+        if (!helper::check_rate_limit()) {
+            $airesponse = get_string('error_ratelimit', 'tiny_aipromptgen');
+        } else {
+            $client = new ai_client();
+            $airesponse = $client->send_request($provider, $generatedprompt);
+        }
     }
 } else if ($mform->is_cancelled()) {
     // Just close the popup or redirect?
@@ -160,6 +164,7 @@ $tmpldata = [
         'Blended',
         'Field Trip',
     ],
+    'templates' => helper::get_templates(),
 
     // AI Provider Options.
     'provideroptions' => [
@@ -179,6 +184,16 @@ $tmpldata = [
             'selected' => false,
         ],
         [
+            'value' => 'deepseek',
+            'label' => 'DeepSeek' . (get_config('tiny_aipromptgen', 'deepseek_apikey') ? '' : ' (✕ Not configured)'),
+            'selected' => false,
+        ],
+        [
+            'value' => 'custom',
+            'label' => 'Custom API' . (get_config('tiny_aipromptgen', 'custom_endpoint') ? '' : ' (✕ Not configured)'),
+            'selected' => false,
+        ],
+        [
             'value' => 'ollama',
             'label' => 'Ollama' . (get_config('tiny_aipromptgen', 'ollama_endpoint') ? '' : ' (✕ Not configured)'),
             'selected' => false,
@@ -187,6 +202,8 @@ $tmpldata = [
     'providersavailable' => (get_config('tiny_aipromptgen', 'openai_apikey') ||
         get_config('tiny_aipromptgen', 'gemini_apikey') ||
         get_config('tiny_aipromptgen', 'claude_apikey') ||
+        get_config('tiny_aipromptgen', 'deepseek_apikey') ||
+        get_config('tiny_aipromptgen', 'custom_endpoint') ||
         get_config('tiny_aipromptgen', 'ollama_endpoint')),
 
     'airesponse_initial' => $airesponse,

@@ -192,7 +192,22 @@ define(['core/str'], function(Str) {
                         sendBtn.disabled = (!gen.value.trim() || unconfigured);
                     };
 
-                    select.addEventListener('change', refreshState);
+                    // Load saved provider from localStorage.
+                    var savedProvider = localStorage.getItem('tiny_aipromptgen_provider');
+                    if (savedProvider) {
+                        // Check if the saved provider is still in the list (could have been disabled).
+                        for (var i = 0; i < select.options.length; i++) {
+                            if (select.options[i].value === savedProvider) {
+                                select.value = savedProvider;
+                                break;
+                            }
+                        }
+                    }
+
+                    select.addEventListener('change', function() {
+                        localStorage.setItem('tiny_aipromptgen_provider', select.value);
+                        refreshState();
+                    });
                     gen.addEventListener('input', refreshState);
 
                     sendBtn.addEventListener('click', function(e) {
@@ -202,7 +217,7 @@ define(['core/str'], function(Str) {
                         var provider = select.value;
                         var form = document.getElementById('ai4t-send-form');
 
-                        if (['ollama', 'gemini', 'claude'].includes(provider)) {
+                        if (['ollama', 'gemini', 'claude', 'deepseek', 'custom'].includes(provider)) {
                             e.preventDefault();
                             var resp = document.getElementById('ai4t-airesponse-body') ||
                                        document.getElementById('ai4t-airesponse');
@@ -441,6 +456,52 @@ define(['core/str'], function(Str) {
                     }
                 };
 
+                var initTemplates = function() {
+                    var templateSelect = document.getElementById('ai4t-template-select');
+                    var gen = document.getElementById('ai4t-generated');
+                    if (!templateSelect || !gen) {
+                        return;
+                    }
+
+                    templateSelect.addEventListener('change', function() {
+                        var template = templateSelect.value;
+                        if (!template) {
+                            return;
+                        }
+
+                        var getValue = function(id) {
+                            var el = document.getElementById(id);
+                            return el ? el.value : '';
+                        };
+
+                        // Helper to replace placeholders like {topic} with actual form values.
+                        var replacements = {
+                            'subject': getValue('id_subject'),
+                            'topic': getValue('id_topic'),
+                            'lesson': getValue('id_lesson'),
+                            'audience': getValue('id_audience') || getValue('id_agerange'),
+                            'outcomes': getValue('id_outcomes'),
+                            'style': getValue('id_classtype'),
+                            'purpose': getValue('id_purpose'),
+                            'language': getValue('id_language')
+                        };
+
+                        var newPrompt = template;
+                        for (var key in replacements) {
+                            var val = replacements[key] || '[' + key + ']';
+                            var regex = new RegExp('\\{' + key + '\\}', 'gi');
+                            newPrompt = newPrompt.replace(regex, val);
+                        }
+
+                        // Also handle simple \n to actual newlines if stored in JSON as \n.
+                        newPrompt = newPrompt.replace(/\\n/g, '\n');
+
+                        gen.value = newPrompt;
+                        // Fire input event to refresh send button state.
+                        gen.dispatchEvent(new Event('input'));
+                    });
+                };
+
                 // Initialize all modules
                 var inits = [
                     function() {
@@ -478,6 +539,9 @@ define(['core/str'], function(Str) {
                     },
                     function() {
                         initResponseModal();
+                    },
+                    function() {
+                        initTemplates();
                     }
                 ];
 

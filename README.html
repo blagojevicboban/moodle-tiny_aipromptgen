@@ -17,8 +17,9 @@
 <p><strong>Tiny AI Prompt Generator</strong> is a self-contained TinyMCE plugin
   for Moodle. It allows teachers to build pedagogical prompts through a guided
   interface and generate AI responses using <strong>OpenAI</strong>,
-  <strong>Google Gemini</strong>, <strong>Anthropic Claude</strong> or a local
-  <strong>Ollama</strong> server, directly within the editor.</p>
+  <strong>Google Gemini</strong>, <strong>Anthropic Claude</strong>,
+  <strong>DeepSeek</strong>, a local <strong>Ollama</strong> server, or any
+  <strong>Custom OpenAI-compatible API</strong>, directly within the editor.</p>
 <h2>Features</h2>
 <ul>
   <li><strong>Standalone Guided Builder</strong>: Easily construct prompts by
@@ -27,16 +28,27 @@
     <ul>
       <li><strong>OpenAI</strong>: Connect to GPT-3.5/4/4o models via API key.
       </li>
-      <li><strong>Google Gemini</strong>: Support for Gemini 1.5 Pro and Flash models.
+      <li><strong>Google Gemini</strong>: Support for Gemini 1.5 Pro and Flash
+        models.
       </li>
-      <li><strong>Anthropic Claude</strong>: Support for Claude 3.5 Sonnet and Haiku models.
+      <li><strong>Anthropic Claude</strong>: Support for Claude 3.5 Sonnet and
+        Haiku models.
+      </li>
+      <li><strong>DeepSeek</strong>: Support for DeepSeek Chat and Reasoner
+        models.
       </li>
       <li><strong>Ollama</strong>: Connect to local LLMs (like Llama 3, Phi-3,
         Mistral) for private, zero-cost generation.</li>
+      <li><strong>Custom API</strong>: Connect any OpenAI-compatible endpoint
+        (LM Studio, Groq, OpenRouter, vLLM, etc.).</li>
     </ul>
   </li>
   <li><strong>Real-time Streaming</strong>: Watch AI responses appear in
     real-time as they are generated.</li>
+  <li><strong>Rate Limiting</strong>: Prevent abuse by limiting requests per user per hour.</li>
+  <li><strong>Quick Templates</strong>: One-click pedagogical prompt structures for common teaching tasks.</li>
+  <li><strong>Dynamic Tooltips</strong>: Instant visibility of active AI provider/model on the toolbar.</li>
+  <li><strong>Selection Persistence</strong>: Remembers your preferred AI provider across sessions.</li>
   <li><strong>Response Modes</strong>: View and copy AI responses in multiple
     formats:
     <ul>
@@ -48,6 +60,12 @@
   </li>
   <li><strong>Privacy Compliant</strong>: Implements Moodle Privacy API (null
     provider - no personal data stored).</li>
+</ul>
+<h2>Admin Tuning Controls</h2>
+<ul>
+  <li><strong>System Prompt</strong>: Set a global instruction context for all AI responses.</li>
+  <li><strong>Temperature & Max Tokens</strong>: Fine-tune the creativity and length of AI responses.</li>
+  <li><strong>Custom Patterns</strong>: Define your own pedagogical JSON templates for teachers.</li>
 </ul>
 <h2>Related Plugins</h2>
 <p>If you prefer a side-block interface instead of an editor-integrated tool,
@@ -139,6 +157,27 @@
     <code>http://localhost:11434</code>).</li>
   <li>Set the model name (e.g., <code>llama3</code>, <code>mistral</code>,
     <code>phi3:mini</code>).</li>
+</ol>
+<h3>DeepSeek Setup</h3>
+<ol>
+  <li>Obtain an API key from
+    <a href="https://platform.deepseek.com/">DeepSeek Platform</a>.</li>
+  <li>Enter your API key in the plugin settings.</li>
+  <li>Choose your preferred model (default: <code>deepseek-chat</code>).
+    Available models: <code>deepseek-chat</code>,
+    <code>deepseek-reasoner</code>.</li>
+</ol>
+<h3>Custom API Setup (OpenAI-compatible)</h3>
+<ol>
+  <li>Enter the full URL of your custom endpoint in the plugin settings
+    (e.g., <code>http://localhost:1234/v1/chat/completions</code> for LM Studio,
+    or <code>https://api.groq.com/openai/v1/chat/completions</code> for
+    Groq).</li>
+  <li>Enter your API key (leave empty if the service does not require
+    one).</li>
+  <li>Enter the model name supported by your endpoint. Compatible services
+    include: LM Studio, Groq, Together AI, OpenRouter, vLLM, Jan, and
+    others.</li>
 </ol>
 <h2>Usage</h2>
 <ol>

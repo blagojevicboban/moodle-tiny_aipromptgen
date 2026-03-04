@@ -2,7 +2,7 @@
 
 [![Moodle Plugin CI](https://github.com/blagojevicboban/moodle-tiny_aipromptgen/actions/workflows/ci.yml/badge.svg)](https://github.com/blagojevicboban/moodle-tiny_aipromptgen/actions/workflows/ci.yml)
 
-**Tiny AI Prompt Generator** is a self-contained TinyMCE plugin for Moodle. It allows teachers to build pedagogical prompts through a guided interface and generate AI responses using **OpenAI**, **Google Gemini**, **Anthropic Claude** or a local **Ollama** server, directly within the editor.
+**Tiny AI Prompt Generator** is a self-contained TinyMCE plugin for Moodle. It allows teachers to build pedagogical prompts through a guided interface and generate AI responses using **OpenAI**, **Google Gemini**, **Anthropic Claude**, **DeepSeek**, a local **Ollama** server, or any **Custom OpenAI-compatible API**, directly within the editor.
 
 ## Features
 
@@ -11,8 +11,23 @@
     - **OpenAI**: Connect to GPT-3.5/4/4o models via API key.
     - **Google Gemini**: Support for Gemini 1.5 Pro and Flash models.
     - **Anthropic Claude**: Support for Claude 3.5 Sonnet and Haiku models.
+    - **DeepSeek**: Support for DeepSeek Chat and Reasoner models.
     - **Ollama**: Connect to local LLMs (like Llama 3, Phi-3, Mistral) for private, zero-cost generation.
+    - **Custom API**: Connect any OpenAI-compatible endpoint (LM Studio, Groq, OpenRouter, vLLM, etc.).
 - **Real-time Streaming**: Watch AI responses appear in real-time as they are generated.
+- **Rate Limiting**: Prevent abuse by limiting requests per user per hour.
+- **Quick Templates**: One-click pedagogical prompt structures for common teaching tasks.
+- **Dynamic Tooltips**: Instant visibility of active AI provider/model on the toolbar.
+- **Selection Persistence**: Remembers your preferred AI provider across sessions.
+
+## 🛠️ Admin Tuning Controls
+- **System Prompt**: Set a global instruction context for all AI responses.
+- **Temperature & Max Tokens**: Fine-tune the creativity and length of AI responses.
+- **Custom Patterns**: Define your own pedagogical JSON templates for teachers.
+- **Admin Tuning Controls** (applies to all providers):
+    - **System Prompt**: Define the AI's role and persona site-wide.
+    - **Temperature**: Control response creativity (0.0 = precise, 2.0 = very creative). Default: 0.7.
+    - **Max Tokens**: Limit response length. Default: 1024.
 - **Response Modes**: View and copy AI responses in multiple formats:
     - **RAW**: Exact AI output.
     - **TEXT**: Cleaned up plain text.
@@ -68,6 +83,20 @@ If you prefer a side-block interface instead of an editor-integrated tool, check
 2. Pull a model: `ollama pull llama3`
 3. Configure the endpoint in plugin settings (default: `http://localhost:11434`).
 4. Set the model name (e.g., `llama3`, `mistral`, `phi3:mini`).
+
+### DeepSeek Setup
+1. Obtain an API key from [DeepSeek Platform](https://platform.deepseek.com/).
+2. Enter your API key in the plugin settings.
+3. Choose your preferred model (default: `deepseek-chat`).
+   Available models: `deepseek-chat`, `deepseek-reasoner`.
+
+### Custom API Setup (OpenAI-compatible)
+1. Enter the base URL of your custom endpoint in the plugin settings
+   (e.g., `http://localhost:1234/v1/chat/completions` for LM Studio,
+   or `https://api.groq.com/openai/v1/chat/completions` for Groq).
+2. Enter your API key (leave empty if the service does not require one).
+3. Enter the model name supported by your endpoint.
+   Compatible services include: LM Studio, Groq, Together AI, OpenRouter, vLLM, Jan, and others.
 
 ## Usage
 
