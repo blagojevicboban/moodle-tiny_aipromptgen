@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.1] - 2026-03-04
+### Fixed
+- **Streaming 404 Error (URL Length Limit)**: Refactored AI streaming from GET-based `EventSource` to POST-based `fetch` to bypass web server URL length limits and mod_security rules that threw 404 or 414 errors for long pedagogical prompts.
+- **Provider Override Bug**: Addressed a bug in the JavaScript streaming module where the active AI provider was inadvertently hardcoded to `ollama`, ensuring that Gemini, Claude, DeepSeek, and Custom APIs now trigger their respective streaming logic correctly.
+
 ## [1.8] - 2026-03-04
 ### Fixed
 - **TinyMCE Plugin Initialization**: Resolved `TypeError: getPluginConfiguration is not a function` by updating the plugin to use the standard TinyMCE `editor.options.get` API for Moodle 4.x compatibility.

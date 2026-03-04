@@ -73,58 +73,9 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
         return statusEl;
     };
 
-    const attachStreamListeners = function(es, resp, statusEl, scrollToResponse) {
-        let first = true;
-        const modalStatus = document.getElementById('ai4t-modal-status');
-
-        es.addEventListener('start', function() {
-            updateElText(statusEl, 'status_started');
-            updateElText(modalStatus, 'status_receiving');
-            scrollToResponse();
-        });
-        es.addEventListener('chunk', function(ev) {
-            if (resp) {
-                resp.textContent += ev.data;
-                if (first) {
-                    scrollToResponse();
-                    first = false;
-                }
-            }
-            updateElText(modalStatus, 'status_receiving');
-        });
-        es.addEventListener('error', function(ev) {
-            if (resp) {
-                Str.get_string('status_error', 'tiny_aipromptgen').then(function(s) {
-                    resp.textContent += '\n[' + s + '] ' + (ev.data || '');
-                    return s;
-                }).catch(function() {
-                    resp.textContent += '\n[Error] ' + (ev.data || '');
-                });
-            }
-            updateElText(statusEl, 'status_error');
-            if (modalStatus) {
-                updateElText(modalStatus, 'status_error_occurred');
-                modalStatus.style.color = '#dc3545';
-            }
-            scrollToResponse();
-        });
-        es.addEventListener('done', function() {
-            updateElText(statusEl, 'status_done');
-            if (modalStatus) {
-                updateElText(modalStatus, 'status_finished');
-                modalStatus.style.color = '#28a745';
-            }
-            if (resp) {
-                resp.removeAttribute('aria-busy');
-                resp.textContent = Markdown.autofixMarkdown(resp.textContent);
-            }
-            scrollToResponse();
-            es.close();
-        });
-    };
 
     const startStream = function(findForm, gen, hidden, resp, scrollToResponse) {
-        if (!window.EventSource) {
+        if (!window.fetch) {
             const form = findForm();
             if (form) {
                 form.submit();
@@ -134,7 +85,10 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
 
         const cidEl = document.querySelector('input[name=courseid]');
         const courseid = (cidEl && cidEl.value) || '';
-        hidden.value = 'ollama';
+        
+        const providerEl = document.getElementById('ai4t-provider');
+        const provider = providerEl ? providerEl.value : 'ollama';
+        hidden.value = provider;
 
         const statusEl = setupStreamingUI(resp);
         const root = (window.M && window.M.cfg && window.M.cfg.wwwroot) ? window.M.cfg.wwwroot : '';
@@ -149,36 +103,152 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
                 'Outcomes: ' + (fd.get('outcomes') || '');
         }
 
-        const es = new EventSource(base + '?courseid=' + encodeURIComponent(courseid) +
-            '&provider=ollama&prompt=' + encodeURIComponent(prompt));
+        const formData = new FormData();
+        formData.append('courseid', courseid);
+        formData.append('provider', provider);
+        formData.append('prompt', prompt);
 
-        // Timeout logic
+        const modalStatus = document.getElementById('ai4t-modal-status');
+        let first = true;
         let lastActivity = Date.now();
-        const timeoutMs = 30000; // 30s timeout
+        const timeoutMs = 30000;
+
+        let reader = null;
         const checkTimeout = setInterval(function() {
             if (Date.now() - lastActivity > timeoutMs) {
                 updateElText(statusEl, 'status_timeout');
                 if (resp) {
                     resp.removeAttribute('aria-busy');
                 }
-                es.close();
+                if (reader) {
+                    reader.cancel();
+                }
                 clearInterval(checkTimeout);
                 scrollToResponse();
             }
         }, 2000);
 
-        // Hook into listeners to update lastActivity
-        es.addEventListener('chunk', function() {
-            lastActivity = Date.now();
-        });
-        es.addEventListener('done', function() {
-            clearInterval(checkTimeout);
-        });
-        es.addEventListener('error', function() {
-            clearInterval(checkTimeout);
-        });
+        fetch(base, {
+            method: 'POST',
+            body: formData
+        }).then(function(response) {
+            if (!response.body) {
+                throw new Error('ReadableStream not supported');
+            }
+            reader = response.body.getReader();
+            const decoder = new TextDecoder('utf-8');
+            let buffer = '';
+            let currentEvent = 'message';
+            let currentData = '';
 
-        attachStreamListeners(es, resp, statusEl, scrollToResponse);
+            updateElText(statusEl, 'status_started');
+            if (modalStatus) {
+                updateElText(modalStatus, 'status_receiving');
+            }
+            scrollToResponse();
+
+            const processLines = function() {
+                const lines = buffer.split(/\r?\n/);
+                buffer = lines.pop(); // keep partial line
+                lines.forEach(function(line) {
+                    if (line === '') {
+                        if (currentEvent === 'error') {
+                            updateElText(statusEl, 'status_error');
+                            if (modalStatus) {
+                                updateElText(modalStatus, 'status_error_occurred');
+                                modalStatus.style.color = '#dc3545';
+                            }
+                            if (resp) {
+                                Str.get_string('status_error', 'tiny_aipromptgen').then(function(s) {
+                                    resp.textContent += '\n[' + s + '] ' + currentData;
+                                    return s;
+                                }).catch(function() {
+                                    resp.textContent += '\n[Error] ' + currentData;
+                                });
+                            }
+                            lastActivity = Date.now();
+                        } else if (currentEvent === 'start') {
+                            updateElText(statusEl, 'status_started');
+                            if (modalStatus) {
+                                updateElText(modalStatus, 'status_receiving');
+                            }
+                            lastActivity = Date.now();
+                        } else if (currentEvent === 'done') {
+                            // Completion handled when stream ends
+                            lastActivity = Date.now();
+                        } else {
+                            if (resp && currentData) {
+                                resp.textContent += currentData;
+                            }
+                            if (modalStatus) {
+                                updateElText(modalStatus, 'status_receiving');
+                            }
+                            if (first) {
+                                scrollToResponse();
+                                first = false;
+                            }
+                            lastActivity = Date.now();
+                        }
+                        currentEvent = 'message';
+                        currentData = '';
+                    } else if (line.startsWith('event: ')) {
+                        currentEvent = line.substring(7);
+                    } else if (line.startsWith('data: ')) {
+                        const val = line.substring(6);
+                        if (currentData === '') {
+                            currentData = val;
+                        } else {
+                            currentData += '\n' + val;
+                        }
+                    }
+                });
+            };
+
+            const pump = function() {
+                return reader.read().then(function(result) {
+                    if (result.done) {
+                        if (buffer.length > 0) {
+                            buffer += '\n\n'; // force flush
+                            processLines();
+                        }
+                        return;
+                    }
+                    buffer += decoder.decode(result.value, {stream: true});
+                    processLines();
+                    return pump();
+                });
+            };
+
+            return pump().then(function() {
+                clearInterval(checkTimeout);
+                updateElText(statusEl, 'status_done');
+                if (modalStatus) {
+                    updateElText(modalStatus, 'status_finished');
+                    modalStatus.style.color = '#28a745';
+                }
+                if (resp) {
+                    resp.removeAttribute('aria-busy');
+                    resp.textContent = Markdown.autofixMarkdown(resp.textContent);
+                }
+                scrollToResponse();
+            });
+        }).catch(function(err) {
+            clearInterval(checkTimeout);
+            if (resp) {
+                Str.get_string('status_error', 'tiny_aipromptgen').then(function(s) {
+                    resp.textContent += '\n[' + s + '] ' + err.message;
+                    return s;
+                }).catch(function() {
+                    resp.textContent += '\n[Error] ' + err.message;
+                });
+            }
+            updateElText(statusEl, 'status_error');
+            if (modalStatus) {
+                updateElText(modalStatus, 'status_error_occurred');
+                modalStatus.style.color = '#dc3545';
+            }
+            scrollToResponse();
+        });
     };
 
     return {
