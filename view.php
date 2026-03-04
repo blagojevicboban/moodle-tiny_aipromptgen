@@ -23,11 +23,13 @@
  */
 
 
+require_once('../../../../../config.php');
 
-if ((isset($_GET['action']) && $_GET['action'] === 'stream') || (isset($_POST['action']) && $_POST['action'] === 'stream')) {
+if ((isset($_GET['action']) && $_GET['action'] === 'stream') ||
+        (isset($_POST['action']) && $_POST['action'] === 'stream')) {
     define('NO_DEBUG_DISPLAY', true);
 }
-require_once('../../../../../config.php');
+
 require_once($CFG->libdir . '/adminlib.php');
 require_once(__DIR__ . '/classes/form/prompt_form.php');
 
