@@ -116,7 +116,7 @@ if ($provider === 'gemini') {
     ]);
 
     require_once($CFG->libdir . '/filelib.php');
-    $curl = new curl();
+    $curl = new curl(['ignoresecurity' => true]);
     $options = [
         'CURLOPT_HTTPHEADER' => ['Content-Type: application/json'],
         'CURLOPT_RETURNTRANSFER' => false,
@@ -154,7 +154,12 @@ if ($provider === 'gemini') {
     ];
 
     tiny_aipromptgen_send_event('Gemini streaming start', 'start');
-    $curl->post($url, $payload, $options);
+    $res = $curl->post($url, $payload, $options);
+    if ($res !== true && is_string($res) && $res !== '') {
+        tiny_aipromptgen_send_event('cURL error: ' . $res, 'error');
+    } else if (!empty($curl->error)) {
+        tiny_aipromptgen_send_event('cURL error: ' . $curl->error, 'error');
+    }
     tiny_aipromptgen_send_event('[DONE]', 'done');
     exit;
 }
@@ -181,7 +186,7 @@ if ($provider === 'deepseek') {
     ]);
 
     require_once($CFG->libdir . '/filelib.php');
-    $curl = new curl();
+    $curl = new curl(['ignoresecurity' => true]);
     $options = [
         'CURLOPT_HTTPHEADER' => [
             'Authorization: Bearer ' . $apikey,
@@ -210,7 +215,12 @@ if ($provider === 'deepseek') {
     ];
 
     tiny_aipromptgen_send_event('DeepSeek streaming start', 'start');
-    $curl->post($url, $payload, $options);
+    $res = $curl->post($url, $payload, $options);
+    if ($res !== true && is_string($res) && $res !== '') {
+        tiny_aipromptgen_send_event('cURL error: ' . $res, 'error');
+    } else if (!empty($curl->error)) {
+        tiny_aipromptgen_send_event('cURL error: ' . $curl->error, 'error');
+    }
     tiny_aipromptgen_send_event('[DONE]', 'done');
     exit;
 }
@@ -235,7 +245,7 @@ if ($provider === 'claude') {
     ]);
 
     require_once($CFG->libdir . '/filelib.php');
-    $curl = new curl();
+    $curl = new curl(['ignoresecurity' => true]);
     $options = [
         'CURLOPT_HTTPHEADER' => [
             'x-api-key: ' . $apikey,
@@ -262,7 +272,12 @@ if ($provider === 'claude') {
     ];
 
     tiny_aipromptgen_send_event('Claude streaming start', 'start');
-    $curl->post($url, $payload, $options);
+    $res = $curl->post($url, $payload, $options);
+    if ($res !== true && is_string($res) && $res !== '') {
+        tiny_aipromptgen_send_event('cURL error: ' . $res, 'error');
+    } else if (!empty($curl->error)) {
+        tiny_aipromptgen_send_event('cURL error: ' . $curl->error, 'error');
+    }
     tiny_aipromptgen_send_event('[DONE]', 'done');
     exit;
 }
@@ -295,7 +310,7 @@ if ($provider === 'custom') {
     }
 
     require_once($CFG->libdir . '/filelib.php');
-    $curl = new curl();
+    $curl = new curl(['ignoresecurity' => true]);
     $options = [
         'CURLOPT_HTTPHEADER' => $hdrs,
         'CURLOPT_RETURNTRANSFER' => false,
@@ -332,7 +347,12 @@ if ($provider === 'custom') {
     }
 
     tiny_aipromptgen_send_event('Custom API streaming start', 'start');
-    $curl->post($endpoint, $payload, $options);
+    $res = $curl->post($endpoint, $payload, $options);
+    if ($res !== true && is_string($res) && $res !== '') {
+        tiny_aipromptgen_send_event('cURL error: ' . $res, 'error');
+    } else if (!empty($curl->error)) {
+        tiny_aipromptgen_send_event('cURL error: ' . $curl->error, 'error');
+    }
     tiny_aipromptgen_send_event('[DONE]', 'done');
     exit;
 }
@@ -380,7 +400,7 @@ if ($schema) {
 }
 $payload = json_encode($body, JSON_UNESCAPED_UNICODE);
 require_once($CFG->libdir . '/filelib.php');
-$curl = new curl();
+$curl = new curl(['ignoresecurity' => true]);
 
 $options = [
     'CURLOPT_HTTPHEADER' => ['Content-Type: application/json'],
@@ -423,8 +443,10 @@ if (preg_match('~^https?://(localhost|127\.0\.0\.1|192\.168\.|10\.|172\.(1[6-9]|
 }
 
 tiny_aipromptgen_send_event('Streaming start', 'start');
-$curl->post($url, $payload, $options);
-if ($curl->error) {
+$res = $curl->post($url, $payload, $options);
+if ($res !== true && is_string($res) && $res !== '') {
+    tiny_aipromptgen_send_event('cURL error: ' . $res, 'error');
+} else if (!empty($curl->error)) {
     tiny_aipromptgen_send_event('cURL error: ' . $curl->error, 'error');
 }
 tiny_aipromptgen_send_event('[DONE]', 'done');
