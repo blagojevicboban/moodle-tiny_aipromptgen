@@ -87,7 +87,7 @@ if ($provider === 'gemini') {
 
     $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:streamGenerateContent?key={$apikey}";
     $payload = json_encode([
-        'contents' => [['parts' => [['text' => $rawprompt]]]]
+        'contents' => [['parts' => [['text' => $rawprompt]]]],
     ]);
 
     require_once($CFG->libdir . '/filelib.php');
@@ -95,7 +95,7 @@ if ($provider === 'gemini') {
     $options = [
         'CURLOPT_HTTPHEADER' => ['Content-Type: application/json'],
         'CURLOPT_RETURNTRANSFER' => false,
-        'CURLOPT_WRITEFUNCTION' => function($ch, $chunk) {
+        'CURLOPT_WRITEFUNCTION' => function ($ch, $chunk) {
             static $buffer = '';
             $buffer .= $chunk;
             // Gemini sends a JSON array of candidates.
@@ -103,14 +103,19 @@ if ($provider === 'gemini') {
                 $depth = 0;
                 $end = -1;
                 for ($i = $start; $i < strlen($buffer); $i++) {
-                    if ($buffer[$i] === '{') $depth++;
-                    else if ($buffer[$i] === '}') $depth--;
+                    if ($buffer[$i] === '{') {
+                        $depth++;
+                    } else if ($buffer[$i] === '}') {
+                        $depth--;
+                    }
                     if ($depth === 0) {
                         $end = $i;
                         break;
                     }
                 }
-                if ($end === -1) break;
+                if ($end === -1) {
+                    break;
+                }
 
                 $json = substr($buffer, $start, $end - $start + 1);
                 $buffer = substr($buffer, $end + 1);
@@ -120,7 +125,7 @@ if ($provider === 'gemini') {
                 }
             }
             return strlen($chunk);
-        }
+        },
     ];
 
     tiny_aipromptgen_send_event('Gemini streaming start', 'start');
@@ -143,7 +148,7 @@ if ($provider === 'claude') {
         'model' => $model,
         'max_tokens' => 4096,
         'messages' => [['role' => 'user', 'content' => $rawprompt]],
-        'stream' => true
+        'stream' => true,
     ]);
 
     require_once($CFG->libdir . '/filelib.php');
@@ -152,10 +157,10 @@ if ($provider === 'claude') {
         'CURLOPT_HTTPHEADER' => [
             'x-api-key: ' . $apikey,
             'anthropic-version: 2023-06-01',
-            'content-type: application/json'
+            'content-type: application/json',
         ],
         'CURLOPT_RETURNTRANSFER' => false,
-        'CURLOPT_WRITEFUNCTION' => function($ch, $chunk) {
+        'CURLOPT_WRITEFUNCTION' => function ($ch, $chunk) {
             static $buffer = '';
             $buffer .= $chunk;
             while (($pos = strpos($buffer, "\n")) !== false) {
@@ -170,7 +175,7 @@ if ($provider === 'claude') {
                 }
             }
             return strlen($chunk);
-        }
+        },
     ];
 
     tiny_aipromptgen_send_event('Claude streaming start', 'start');
