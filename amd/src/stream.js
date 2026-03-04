@@ -85,7 +85,7 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
 
         const cidEl = document.querySelector('input[name=courseid]');
         const courseid = (cidEl && cidEl.value) || '';
-        
+
         const providerEl = document.getElementById('ai4t-provider');
         const provider = providerEl ? providerEl.value : 'ollama';
         hidden.value = provider;
