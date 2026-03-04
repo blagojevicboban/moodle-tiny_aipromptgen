@@ -25,8 +25,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+define('AJAX_SCRIPT', true);
+
 require_once(__DIR__ . '/../../../../../config.php');
 require_login();
+require_sesskey();
 
 $courseid = required_param('courseid', PARAM_INT);
 $provider = optional_param('provider', 'ollama', PARAM_ALPHA);

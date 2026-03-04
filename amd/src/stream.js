@@ -134,6 +134,7 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
             formData.append('courseid', courseid);
             formData.append('provider', provider);
             formData.append('prompt', prompt);
+            formData.append('sesskey', M.cfg.sesskey);
 
             const modalStatus = document.getElementById('ai4t-modal-status');
             let first = true;
@@ -231,7 +232,8 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
             // eslint-disable-next-line promise/no-nesting
             return fetch(base, {
                 method: 'POST',
-                body: formData
+                body: formData,
+                credentials: 'same-origin'
             }).then(function(response) {
                 if (!response.body) {
                     throw new Error('ReadableStream not supported');
