@@ -202,7 +202,7 @@ define(['core/str'], function(Str) {
                         var provider = select.value;
                         var form = document.getElementById('ai4t-send-form');
 
-                        if (provider === 'ollama') {
+                        if (['ollama', 'gemini', 'claude'].includes(provider)) {
                             e.preventDefault();
                             var resp = document.getElementById('ai4t-airesponse-body') ||
                                        document.getElementById('ai4t-airesponse');

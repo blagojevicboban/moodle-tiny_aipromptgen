@@ -69,9 +69,112 @@ if ($rawprompt === '') {
     $rawprompt = "Topic: {$topic}\nLesson: {$lesson}\nOutcomes: {$outcomes}";
 }
 
-// Only Ollama streaming implemented here.
-if ($provider !== 'ollama') {
+// Ollama, Gemini and Claude streaming implemented here.
+if (!in_array($provider, ['ollama', 'gemini', 'claude'])) {
     tiny_aipromptgen_send_event('Unsupported provider for streaming: ' . $provider, 'error');
+    tiny_aipromptgen_send_event('[DONE]', 'done');
+    exit;
+}
+
+if ($provider === 'gemini') {
+    $apikey = (string)(get_config('tiny_aipromptgen', 'gemini_apikey') ?? '');
+    $model = (string)(get_config('tiny_aipromptgen', 'gemini_model') ?? 'gemini-1.5-flash');
+    if ($apikey === '') {
+        tiny_aipromptgen_send_event('Gemini API key not configured', 'error');
+        tiny_aipromptgen_send_event('[DONE]', 'done');
+        exit;
+    }
+
+    $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:streamGenerateContent?key={$apikey}";
+    $payload = json_encode([
+        'contents' => [['parts' => [['text' => $rawprompt]]]]
+    ]);
+
+    require_once($CFG->libdir . '/filelib.php');
+    $curl = new curl();
+    $options = [
+        'CURLOPT_HTTPHEADER' => ['Content-Type: application/json'],
+        'CURLOPT_RETURNTRANSFER' => false,
+        'CURLOPT_WRITEFUNCTION' => function($ch, $chunk) {
+            static $buffer = '';
+            $buffer .= $chunk;
+            // Gemini sends a JSON array of candidates.
+            while (($start = strpos($buffer, '{')) !== false) {
+                $depth = 0;
+                $end = -1;
+                for ($i = $start; $i < strlen($buffer); $i++) {
+                    if ($buffer[$i] === '{') $depth++;
+                    else if ($buffer[$i] === '}') $depth--;
+                    if ($depth === 0) {
+                        $end = $i;
+                        break;
+                    }
+                }
+                if ($end === -1) break;
+
+                $json = substr($buffer, $start, $end - $start + 1);
+                $buffer = substr($buffer, $end + 1);
+                $obj = json_decode($json, true);
+                if (isset($obj['candidates'][0]['content']['parts'][0]['text'])) {
+                    tiny_aipromptgen_send_event($obj['candidates'][0]['content']['parts'][0]['text'], 'chunk');
+                }
+            }
+            return strlen($chunk);
+        }
+    ];
+
+    tiny_aipromptgen_send_event('Gemini streaming start', 'start');
+    $curl->post($url, $payload, $options);
+    tiny_aipromptgen_send_event('[DONE]', 'done');
+    exit;
+}
+
+if ($provider === 'claude') {
+    $apikey = (string)(get_config('tiny_aipromptgen', 'claude_apikey') ?? '');
+    $model = (string)(get_config('tiny_aipromptgen', 'claude_model') ?? 'claude-3-5-sonnet-20240620');
+    if ($apikey === '') {
+        tiny_aipromptgen_send_event('Claude API key not configured', 'error');
+        tiny_aipromptgen_send_event('[DONE]', 'done');
+        exit;
+    }
+
+    $url = 'https://api.anthropic.com/v1/messages';
+    $payload = json_encode([
+        'model' => $model,
+        'max_tokens' => 4096,
+        'messages' => [['role' => 'user', 'content' => $rawprompt]],
+        'stream' => true
+    ]);
+
+    require_once($CFG->libdir . '/filelib.php');
+    $curl = new curl();
+    $options = [
+        'CURLOPT_HTTPHEADER' => [
+            'x-api-key: ' . $apikey,
+            'anthropic-version: 2023-06-01',
+            'content-type: application/json'
+        ],
+        'CURLOPT_RETURNTRANSFER' => false,
+        'CURLOPT_WRITEFUNCTION' => function($ch, $chunk) {
+            static $buffer = '';
+            $buffer .= $chunk;
+            while (($pos = strpos($buffer, "\n")) !== false) {
+                $line = trim(substr($buffer, 0, $pos));
+                $buffer = substr($buffer, $pos + 1);
+                if (strpos($line, 'data: ') === 0) {
+                    $json = substr($line, 6);
+                    $obj = json_decode($json, true);
+                    if ($obj && $obj['type'] === 'content_block_delta') {
+                        tiny_aipromptgen_send_event($obj['delta']['text'], 'chunk');
+                    }
+                }
+            }
+            return strlen($chunk);
+        }
+    ];
+
+    tiny_aipromptgen_send_event('Claude streaming start', 'start');
+    $curl->post($url, $payload, $options);
     tiny_aipromptgen_send_event('[DONE]', 'done');
     exit;
 }
