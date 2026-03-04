@@ -74,6 +74,7 @@ $string['form_subjectlabel'] = 'Subject';
 $string['form_subjectplaceholder'] = 'e.g. Mathematics, Biology...';
 $string['form_submit'] = 'Generate prompt';
 $string['form_templates_label'] = 'Quick Templates';
+$string['form_topicbrowse'] = 'Browse topics';
 $string['form_topiclabel'] = 'Topic/Section';
 $string['help_agerange'] = 'Type an age or grade, or click Browse to pick exact age or range';
 $string['help_audience'] = 'Type an audience or click Browse to pick';

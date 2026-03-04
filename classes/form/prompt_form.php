@@ -104,7 +104,7 @@ class prompt_form extends \moodleform {
             'list' => 'ai4t-topiclist',
             'title' => \get_string('help_topic', 'tiny_aipromptgen'),
         ]);
-        $topicelems[] = $mform->createElement('button', 'topicbrowse', \get_string('form_topicbrowse', 'tiny_aipromptgen'), [
+        $topicelems[] = $mform->createElement('button', 'topicbrowse', \get_string('form_lessonbrowse', 'tiny_aipromptgen'), [
             'type' => 'button',
             'id' => 'ai4t-topic-browse',
             'class' => 'btn btn-secondary btn-sm',
@@ -198,7 +198,7 @@ class prompt_form extends \moodleform {
         $outcomeselems[] = $mform->createElement(
             'button',
             'outcomesbrowse',
-            get_string('form_outcomesbrowse', 'tiny_aipromptgen'),
+            get_string('form_lessonbrowse', 'tiny_aipromptgen'),
             [
                 'type' => 'button',
                 'id' => 'ai4t-outcomes-browse',
