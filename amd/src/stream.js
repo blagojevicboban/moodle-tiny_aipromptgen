@@ -112,8 +112,85 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
         let first = true;
         let lastActivity = Date.now();
         const timeoutMs = 30000;
-
         let reader = null;
+        const decoder = new TextDecoder('utf-8');
+        let buffer = '';
+        let currentEvent = 'message';
+        let currentData = '';
+
+        const processLines = function() {
+            const lines = buffer.split(/\r?\n/);
+            buffer = lines.pop(); // Keep partial line
+            lines.forEach(function(line) {
+                if (line === '') {
+                    if (currentEvent === 'error') {
+                        updateElText(statusEl, 'status_error');
+                        if (modalStatus) {
+                            updateElText(modalStatus, 'status_error_occurred');
+                            modalStatus.style.color = '#dc3545';
+                        }
+                        if (resp) {
+                            // We fire and forget here to avoid nesting warnings in synchronous loop.
+                            Str.get_string('status_error', 'tiny_aipromptgen').then(function(s) {
+                                resp.textContent += '\n[' + s + '] ' + currentData;
+                                return s;
+                            }).catch(function() {
+                                resp.textContent += '\n[Error] ' + currentData;
+                            });
+                        }
+                        lastActivity = Date.now();
+                    } else if (currentEvent === 'start') {
+                        updateElText(statusEl, 'status_started');
+                        if (modalStatus) {
+                            updateElText(modalStatus, 'status_receiving');
+                        }
+                        lastActivity = Date.now();
+                    } else if (currentEvent === 'done') {
+                        // Completion handled when stream ends.
+                        lastActivity = Date.now();
+                    } else {
+                        if (resp && currentData) {
+                            resp.textContent += currentData;
+                        }
+                        if (modalStatus) {
+                            updateElText(modalStatus, 'status_receiving');
+                        }
+                        if (first) {
+                            scrollToResponse();
+                            first = false;
+                        }
+                        lastActivity = Date.now();
+                    }
+                    currentEvent = 'message';
+                    currentData = '';
+                } else if (line.startsWith('event: ')) {
+                    currentEvent = line.substring(7);
+                } else if (line.startsWith('data: ')) {
+                    const val = line.substring(6);
+                    if (currentData === '') {
+                        currentData = val;
+                    } else {
+                        currentData += '\n' + val;
+                    }
+                }
+            });
+        };
+
+        const pump = function() {
+            return reader.read().then(function(result) {
+                if (result.done) {
+                    if (buffer.length > 0) {
+                        buffer += '\n\n'; // Force flush.
+                        processLines();
+                    }
+                    return Promise.resolve();
+                }
+                buffer += decoder.decode(result.value, {stream: true});
+                processLines();
+                return pump();
+            });
+        };
+
         const checkTimeout = setInterval(function() {
             if (Date.now() - lastActivity > timeoutMs) {
                 updateElText(statusEl, 'status_timeout');
@@ -136,10 +213,6 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
                 throw new Error('ReadableStream not supported');
             }
             reader = response.body.getReader();
-            const decoder = new TextDecoder('utf-8');
-            let buffer = '';
-            let currentEvent = 'message';
-            let currentData = '';
 
             updateElText(statusEl, 'status_started');
             if (modalStatus) {
@@ -147,91 +220,20 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
             }
             scrollToResponse();
 
-            const processLines = function() {
-                const lines = buffer.split(/\r?\n/);
-                buffer = lines.pop(); // keep partial line
-                lines.forEach(function(line) {
-                    if (line === '') {
-                        if (currentEvent === 'error') {
-                            updateElText(statusEl, 'status_error');
-                            if (modalStatus) {
-                                updateElText(modalStatus, 'status_error_occurred');
-                                modalStatus.style.color = '#dc3545';
-                            }
-                            if (resp) {
-                                Str.get_string('status_error', 'tiny_aipromptgen').then(function(s) {
-                                    resp.textContent += '\n[' + s + '] ' + currentData;
-                                    return s;
-                                }).catch(function() {
-                                    resp.textContent += '\n[Error] ' + currentData;
-                                });
-                            }
-                            lastActivity = Date.now();
-                        } else if (currentEvent === 'start') {
-                            updateElText(statusEl, 'status_started');
-                            if (modalStatus) {
-                                updateElText(modalStatus, 'status_receiving');
-                            }
-                            lastActivity = Date.now();
-                        } else if (currentEvent === 'done') {
-                            // Completion handled when stream ends
-                            lastActivity = Date.now();
-                        } else {
-                            if (resp && currentData) {
-                                resp.textContent += currentData;
-                            }
-                            if (modalStatus) {
-                                updateElText(modalStatus, 'status_receiving');
-                            }
-                            if (first) {
-                                scrollToResponse();
-                                first = false;
-                            }
-                            lastActivity = Date.now();
-                        }
-                        currentEvent = 'message';
-                        currentData = '';
-                    } else if (line.startsWith('event: ')) {
-                        currentEvent = line.substring(7);
-                    } else if (line.startsWith('data: ')) {
-                        const val = line.substring(6);
-                        if (currentData === '') {
-                            currentData = val;
-                        } else {
-                            currentData += '\n' + val;
-                        }
-                    }
-                });
-            };
-
-            const pump = function() {
-                return reader.read().then(function(result) {
-                    if (result.done) {
-                        if (buffer.length > 0) {
-                            buffer += '\n\n'; // force flush
-                            processLines();
-                        }
-                        return;
-                    }
-                    buffer += decoder.decode(result.value, {stream: true});
-                    processLines();
-                    return pump();
-                });
-            };
-
-            return pump().then(function() {
-                clearInterval(checkTimeout);
-                updateElText(statusEl, 'status_done');
-                if (modalStatus) {
-                    updateElText(modalStatus, 'status_finished');
-                    modalStatus.style.color = '#28a745';
-                }
-                if (resp) {
-                    resp.removeAttribute('aria-busy');
-                    resp.textContent = Markdown.autofixMarkdown(resp.textContent);
-                }
-                scrollToResponse();
-            });
+            return pump();
+        }).then(function() {
+            clearInterval(checkTimeout);
+            updateElText(statusEl, 'status_done');
+            if (modalStatus) {
+                updateElText(modalStatus, 'status_finished');
+                modalStatus.style.color = '#28a745';
+            }
+            if (resp) {
+                resp.removeAttribute('aria-busy');
+                resp.textContent = Markdown.autofixMarkdown(resp.textContent);
+            }
+            scrollToResponse();
+            return null;
         }).catch(function(err) {
             clearInterval(checkTimeout);
             if (resp) {
@@ -248,6 +250,7 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
                 modalStatus.style.color = '#dc3545';
             }
             scrollToResponse();
+            return null;
         });
     };
 
