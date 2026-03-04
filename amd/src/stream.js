@@ -199,6 +199,7 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
             };
 
             const pump = function() {
+                // eslint-disable-next-line promise/no-nesting
                 return reader.read().then(function(result) {
                     if (result.done) {
                         if (buffer.length > 0) {
@@ -227,6 +228,7 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
                 }
             }, 2000);
 
+            // eslint-disable-next-line promise/no-nesting
             return fetch(base, {
                 method: 'POST',
                 body: formData
