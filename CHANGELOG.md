@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8] - 2026-03-04
+### Fixed
+- **TinyMCE Plugin Initialization**: Resolved `TypeError: getPluginConfiguration is not a function` by updating the plugin to use the standard TinyMCE `editor.options.get` API for Moodle 4.x compatibility.
+- **Improved Language Strings**: Added missing `form_topicbrowse` identifier and standardized "Browse" button labels in the pedagogical form for better consistency.
+- **Production Minification Patch**: Directly patched the minified `plugin.min.js` to ensure stability in production environments where scripts are combined/minified by Moodle.
+- **Documentation Hygiene**: Wrapped long lines in `README.html` and `README.md` to comply with coding standards and improve maintainability.
+
 ## [1.7] - 2026-03-04
 ### Added
 - **Predefined Quick Templates**: Admin-configurable pedagogical templates for one-click prompt generation. Includes 4 built-in defaults (Bloom's Taxonomy, Lesson Plan, Socratic Tutor, Executive Summary).
