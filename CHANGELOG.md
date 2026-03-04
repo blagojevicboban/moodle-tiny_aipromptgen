@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.2] - 2026-03-05
+### Fixed
+- **Stream Crash / Cache Definition Error**: Fixed an issue where releasing the Moodle session early in `AJAX_SCRIPT` mode caused a fatal error (`The requested cache definition does not exist.core/session`) by properly injecting `$SESSION` globals and disabling `NO_DEBUG_DISPLAY`.
+- **Unhandled Permission Exceptions**: Wrapped capability and login checks in `view.php` with a try-catch block to gracefully intercept internal Moodle security redirects (like `require_sesskey` and `require_capability`), displaying inline UI error messages instead of silently breaking the stream with HTTP 404 or 303 Redirects.
+- **Capabilities Warning**: Supplied the missing translation string for `aipromptgen:use` to silence debug output that previously corrupted the SSE data payload.
+
 ## [1.8.1] - 2026-03-04
 ### Fixed
 - **Streaming 404 Error (URL Length Limit)**: Refactored AI streaming from GET-based `EventSource` to POST-based `fetch` to bypass web server URL length limits and mod_security rules that threw 404 or 414 errors for long pedagogical prompts.

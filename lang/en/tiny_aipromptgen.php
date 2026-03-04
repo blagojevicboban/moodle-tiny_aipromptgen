@@ -23,6 +23,7 @@
  */
 
 $string['aipromptgen_use'] = 'Use AI Prompt Generator';
+$string['aipromptgen:use'] = 'Use AI Prompt Generator';
 $string['buttontitle'] = 'AI Prompt Generator';
 $string['classtype_assessment'] = 'Assessment/Test';
 $string['classtype_discussion'] = 'Discussion';

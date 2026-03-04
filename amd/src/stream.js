@@ -111,7 +111,7 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
             {key: 'status_timeout', component: 'tiny_aipromptgen'}
         ]).then(function() {
             const cidEl = document.querySelector('input[name=courseid]');
-            const courseid = (cidEl && cidEl.value) || '';
+            const courseid = (cidEl && cidEl.value) || (window.M && window.M.cfg && window.M.cfg.courseId) || '';
 
             const providerEl = document.getElementById('ai4t-provider');
             const provider = providerEl ? providerEl.value : 'ollama';
@@ -235,6 +235,19 @@ define(['core/str', 'tiny_aipromptgen/markdown'], function(Str, Markdown) {
                 body: formData,
                 credentials: 'same-origin'
             }).then(function(response) {
+                if (!response.ok) {
+                    return response.text().then(function(text) {
+                        const errmsg = 'HTTP Error: ' + response.status + ' ' + response.statusText + ' | URL: ' + base;
+                        throw new Error(errmsg + ' | Body: ' + text.substring(0, 150));
+                    });
+                }
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('text/event-stream')) {
+                    return response.text().then(function(text) {
+                        const errmsg = 'Invalid content type from server: ' + (contentType || 'none') + ' | URL: ' + base;
+                        throw new Error(errmsg + ' | Body: ' + text.substring(0, 1000));
+                    });
+                }
                 if (!response.body) {
                     throw new Error('ReadableStream not supported');
                 }

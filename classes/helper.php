@@ -480,21 +480,17 @@ class helper {
             return true; // Disabled.
         }
 
-        // Use Moodle Cache (session level is sufficient for anti-abuse within a session).
-        $cache = \cache::make('core', 'session');
+        global $SESSION;
+        
         $key = 'tiny_aipromptgen_requests_' . date('YmdH'); // Hourly window.
-        $current = $cache->get($key);
-
-        if ($current === false) {
-            $current = 0;
-        }
+        $current = isset($SESSION->{$key}) ? $SESSION->{$key} : 0;
 
         if ($current >= $limit) {
             return false;
         }
 
         if ($increment) {
-            $cache->set($key, $current + 1);
+            $SESSION->{$key} = $current + 1;
         }
 
         return true;

@@ -31,12 +31,10 @@
 
 
 
-$courseid = required_param('courseid', PARAM_INT);
-$provider = optional_param('provider', 'ollama', PARAM_ALPHA);
+require_once(__DIR__ . '/../../../../../config.php');
 
-$course = get_course($courseid);
-$context = context_course::instance($course->id);
-require_capability('tiny/aipromptgen:use', $context);
+$courseid = optional_param('courseid', 0, PARAM_INT);
+$provider = optional_param('provider', 'ollama', PARAM_ALPHA);
 
 // Disable buffering for streaming.
 while (ob_get_level()) {
@@ -63,6 +61,21 @@ function tiny_aipromptgen_send_event(string $data, string $event = 'message'): v
     @flush();
 }
 
+if (empty($courseid)) {
+    tiny_aipromptgen_send_event('Required parameter "courseid" is missing or invalid.', 'error');
+    tiny_aipromptgen_send_event('[DONE]', 'done');
+    exit;
+}
+
+try {
+    $course = get_course($courseid);
+    $context = context_course::instance($course->id);
+    require_capability('tiny/aipromptgen:use', $context);
+} catch (Exception $e) {
+    tiny_aipromptgen_send_event('Access error: ' . $e->getMessage(), 'error');
+    tiny_aipromptgen_send_event('[DONE]', 'done');
+    exit;
+}
 $rawprompt = optional_param('prompt', '', PARAM_RAW_TRIMMED);
 if ($rawprompt === '') {
     // Fallback: concatenate basic fields (topic, lesson, outcomes). This is simplified vs full view builder.
