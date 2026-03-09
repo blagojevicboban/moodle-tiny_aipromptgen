@@ -2,6 +2,8 @@
 
 [![Moodle Plugin CI](https://github.com/blagojevicboban/moodle-tiny_aipromptgen/actions/workflows/ci.yml/badge.svg)](https://github.com/blagojevicboban/moodle-tiny_aipromptgen/actions/workflows/ci.yml)
 
+https://moodle.org/plugins/tiny_aipromptgen
+
 ### The plugin is a product of Erasmus project: KA220-VET - Cooperation partnerships in vocational education and training. Project Title: AI tools for VET schools
 
 **Tiny AI Prompt Generator** is a self-contained TinyMCE plugin for Moodle. It allows teachers to build pedagogical prompts through a guided interface and generate AI responses using **OpenAI**, **Google Gemini**, **Anthropic Claude**, **DeepSeek**, a local **Ollama** server, or any **Custom OpenAI-compatible API**, directly within the editor.
