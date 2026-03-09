@@ -219,4 +219,4 @@ See [LICENSE](LICENSE) for details.
 
 ---
 
-© 2025 AI4Teachers | [Boban Blagojević](https://github.com/blagojevicboban)
+© 2026 AI4Teachers | [Boban Blagojević](https://github.com/blagojevicboban)
