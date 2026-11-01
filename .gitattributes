@@ -1,0 +1,6 @@
+# Force LF line endings for all text files (also in git archive on Windows).
+* text=auto eol=lf
+*.min.js -diff
+*.map -diff
+*.png binary
+*.svg text
