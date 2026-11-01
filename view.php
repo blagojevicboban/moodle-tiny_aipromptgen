@@ -113,21 +113,61 @@ $airesponse = '';
 $rawprompt = optional_param('ai4t_generated', '', PARAM_RAW);
 $provider = optional_param('sendto', '', PARAM_TEXT);
 
+$client = new ai_client();
 if (!empty($provider) && !empty($rawprompt) && confirm_sesskey()) {
     $generatedprompt = $rawprompt;
-    if (in_array($provider, ['openai', 'ollama', 'gemini', 'claude', 'deepseek', 'custom'])) {
+    if (in_array($provider, ai_client::PROVIDERS)) {
         if (!helper::check_rate_limit()) {
             $airesponse = get_string('error_ratelimit', 'tiny_aipromptgen');
         } else {
-            $client = new ai_client();
             $airesponse = $client->send_request($provider, $generatedprompt);
         }
     }
 } else if ($mform->is_cancelled()) {
-    // Just close the popup or redirect?
-    echo "<script>window.close();</script>";
-    exit;
+    redirect(new moodle_url('/course/view.php', ['id' => $courseid]));
 }
+
+// Provider options for the "Send to AI" menu.
+$providernames = [
+    'openai' => 'OpenAI',
+    'gemini' => 'Gemini',
+    'claude' => 'Claude',
+    'deepseek' => 'DeepSeek',
+    'custom' => get_string('provider_custom', 'tiny_aipromptgen'),
+    'ollama' => 'Ollama',
+];
+$provideroptions = [];
+$providersavailable = false;
+foreach (ai_client::PROVIDERS as $name) {
+    $configured = $client->is_configured($name);
+    $providersavailable = $providersavailable || $configured;
+    $provideroptions[] = [
+        'value' => $name,
+        'label' => $configured ? $providernames[$name] :
+            get_string('provider_notconfigured', 'tiny_aipromptgen', $providernames[$name]),
+        'selected' => $name === 'openai',
+    ];
+}
+
+// Language list: the English name goes into the prompt, the label is shown in the user's language.
+$flags = [
+    'en' => '🇺🇸', 'es' => '🇪🇸', 'fr' => '🇫🇷', 'de' => '🇩🇪', 'it' => '🇮🇹', 'pt' => '🇵🇹', 'nl' => '🇳🇱', 'pl' => '🇵🇱',
+    'ru' => '🇷🇺', 'ja' => '🇯🇵', 'zh' => '🇨🇳', 'sr_lt' => '🇷🇸', 'sr_cr' => '🇷🇸', 'hr' => '🇭🇷', 'bs' => '🇧🇦', 'sk' => '🇸🇰',
+];
+$languages = [];
+foreach ($flags as $code => $flag) {
+    $languages[] = [
+        'code' => $code,
+        'name' => get_string_manager()->get_string('lang_' . $code, 'tiny_aipromptgen', null, 'en'),
+        'label' => get_string('lang_' . $code, 'tiny_aipromptgen') . ' ' . $flag,
+    ];
+}
+
+$liststrings = function (array $keys): array {
+    return array_map(function ($key) {
+        return get_string($key, 'tiny_aipromptgen');
+    }, $keys);
+};
 
 // Render Page.
 echo $OUTPUT->header();
@@ -149,92 +189,19 @@ $tmpldata = [
     'lessonoptions' => $lessonoptions,
     'competencies' => $competencies,
 
-    // Static lists for modals.
-    'languages' => [
-        ['code' => 'en', 'name' => 'English', 'label' => 'English 🇺🇸'],
-        ['code' => 'es', 'name' => 'Spanish', 'label' => 'Spanish 🇪🇸'],
-        ['code' => 'fr', 'name' => 'French', 'label' => 'French 🇫🇷'],
-        ['code' => 'de', 'name' => 'German', 'label' => 'German 🇩🇪'],
-        ['code' => 'it', 'name' => 'Italian', 'label' => 'Italian 🇮🇹'],
-        ['code' => 'pt', 'name' => 'Portuguese', 'label' => 'Portuguese 🇵🇹'],
-        ['code' => 'nl', 'name' => 'Dutch', 'label' => 'Dutch 🇳🇱'],
-        ['code' => 'pl', 'name' => 'Polish', 'label' => 'Polish 🇵🇱'],
-        ['code' => 'ru', 'name' => 'Russian', 'label' => 'Russian 🇷🇺'],
-        ['code' => 'ja', 'name' => 'Japanese', 'label' => 'Japanese 🇯🇵'],
-        ['code' => 'zh', 'name' => 'Chinese', 'label' => 'Chinese 🇨🇳'],
-        ['code' => 'sr_lt', 'name' => 'Serbian (Latin)', 'label' => 'Serbian (Latin) 🇷🇸'],
-        ['code' => 'sr_cr', 'name' => 'Serbian (Cyrillic)', 'label' => 'Serbian (Cyrillic) 🇷🇸'],
-        ['code' => 'hr', 'name' => 'Croatian', 'label' => 'Croatian 🇭🇷'],
-        ['code' => 'bs', 'name' => 'Bosnian', 'label' => 'Bosnian 🇧🇦'],
-    ],
-    'purposes' => [
-        'Lesson Plan',
-        'Syllabus',
-        'Quiz/Assessment',
-        'Activity Design',
-        'Project Outline',
-        'Rubric',
-        'Explanation',
-        'Summary',
-    ],
-    'audiences' => [
-        'Beginners',
-        'Intermediate',
-        'Advanced',
-        'Mixed Ability',
-        'Special Needs',
-        'Professional',
-    ],
-    'classtypes' => [
-        'Lecture',
-        'Workshop',
-        'Seminar',
-        'Lab',
-        'Online/Virtual',
-        'Blended',
-        'Field Trip',
-    ],
+    // Lists for the modals.
+    'languages' => $languages,
+    'purposes' => $liststrings(['purpose_lessonplan', 'purpose_syllabus', 'purpose_quiz', 'purpose_activity',
+        'purpose_project', 'purpose_rubric', 'purpose_explanation', 'purpose_summary']),
+    'audiences' => $liststrings(['audience_beginners', 'audience_intermediate', 'audience_advanced', 'audience_mixed',
+        'audience_specialneeds', 'audience_professional']),
+    'classtypes' => $liststrings(['classtype_lecture', 'classtype_workshop', 'classtype_seminar', 'classtype_lab',
+        'classtype_online', 'classtype_blended', 'classtype_fieldtrip']),
     'templates' => helper::get_templates(),
 
-    // AI Provider Options.
-    'provideroptions' => [
-        [
-            'value' => 'openai',
-            'label' => 'OpenAI' . (get_config('tiny_aipromptgen', 'openai_apikey') ? '' : ' (✕ Not configured)'),
-            'selected' => true,
-        ],
-        [
-            'value' => 'gemini',
-            'label' => 'Gemini' . (get_config('tiny_aipromptgen', 'gemini_apikey') ? '' : ' (✕ Not configured)'),
-            'selected' => false,
-        ],
-        [
-            'value' => 'claude',
-            'label' => 'Claude' . (get_config('tiny_aipromptgen', 'claude_apikey') ? '' : ' (✕ Not configured)'),
-            'selected' => false,
-        ],
-        [
-            'value' => 'deepseek',
-            'label' => 'DeepSeek' . (get_config('tiny_aipromptgen', 'deepseek_apikey') ? '' : ' (✕ Not configured)'),
-            'selected' => false,
-        ],
-        [
-            'value' => 'custom',
-            'label' => 'Custom API' . (get_config('tiny_aipromptgen', 'custom_endpoint') ? '' : ' (✕ Not configured)'),
-            'selected' => false,
-        ],
-        [
-            'value' => 'ollama',
-            'label' => 'Ollama' . (get_config('tiny_aipromptgen', 'ollama_endpoint') ? '' : ' (✕ Not configured)'),
-            'selected' => false,
-        ],
-    ],
-    'providersavailable' => (get_config('tiny_aipromptgen', 'openai_apikey') ||
-        get_config('tiny_aipromptgen', 'gemini_apikey') ||
-        get_config('tiny_aipromptgen', 'claude_apikey') ||
-        get_config('tiny_aipromptgen', 'deepseek_apikey') ||
-        get_config('tiny_aipromptgen', 'custom_endpoint') ||
-        get_config('tiny_aipromptgen', 'ollama_endpoint')),
+    // AI provider options.
+    'provideroptions' => $provideroptions,
+    'providersavailable' => $providersavailable,
 
     'airesponse_initial' => $airesponse,
 ];

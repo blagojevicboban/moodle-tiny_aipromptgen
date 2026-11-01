@@ -24,22 +24,40 @@
 
 $string['aipromptgen:use'] = 'Use AI Prompt Generator';
 $string['aipromptgen_use'] = 'Use AI Prompt Generator';
+$string['audience_advanced'] = 'Advanced';
+$string['audience_beginners'] = 'Beginners';
+$string['audience_intermediate'] = 'Intermediate';
+$string['audience_mixed'] = 'Mixed ability';
+$string['audience_professional'] = 'Professional';
+$string['audience_specialneeds'] = 'Special needs';
 $string['buttontitle'] = 'AI Prompt Generator';
+$string['cachedef_ratelimit'] = 'Number of AI requests per user in the current hour (rate limit)';
 $string['classtype_assessment'] = 'Assessment/Test';
+$string['classtype_blended'] = 'Blended';
 $string['classtype_discussion'] = 'Discussion';
+$string['classtype_fieldtrip'] = 'Field trip';
 $string['classtype_groupwork'] = 'Group work';
 $string['classtype_lab'] = 'Lab/Practical';
 $string['classtype_lecture'] = 'Lecture';
+$string['classtype_online'] = 'Online/Virtual';
 $string['classtype_project'] = 'Project-based';
 $string['classtype_review'] = 'Review/Revision';
+$string['classtype_seminar'] = 'Seminar';
+$string['classtype_workshop'] = 'Workshop';
 $string['default_language'] = 'English';
+$string['error_access'] = 'Access error: {$a}';
+$string['error_api'] = 'AI service error: {$a}';
+$string['error_connection'] = 'Could not connect to the AI service: {$a}';
 $string['error_noapikey'] = 'OpenAI API key is not configured in settings.';
 $string['error_noclaudeapikey'] = 'No Claude API key found in configuration.';
+$string['error_nocourseid'] = 'Required parameter "courseid" is missing or invalid.';
 $string['error_nocustom_endpoint'] = 'Custom API endpoint is not configured in settings.';
 $string['error_nodeepseek_apikey'] = 'DeepSeek API key is not configured in settings.';
 $string['error_noendpoint'] = 'Ollama endpoint is not configured in settings.';
 $string['error_nogeminiapikey'] = 'Gemini API key is not configured in settings.';
 $string['error_ratelimit'] = 'You have exceeded the maximum number of AI requests allowed per hour. Please try again later.';
+$string['error_unknownprovider'] = 'Unknown AI provider: {$a}';
+$string['error_unknownresponse'] = 'Unexpected response from the AI service: {$a}';
 $string['form_agebrowse'] = 'Browse age or range';
 $string['form_ageexact'] = 'Exact age';
 $string['form_agerange_option'] = 'Age range';
@@ -102,11 +120,23 @@ $string['label_outcomes'] = 'Outcomes';
 $string['label_purpose'] = 'Purpose';
 $string['label_subject'] = 'Subject';
 $string['label_topic'] = 'Teaching topic (area)';
+$string['lang_bs'] = 'Bosnian';
+$string['lang_de'] = 'German';
 $string['lang_en'] = 'English';
+$string['lang_es'] = 'Spanish';
+$string['lang_fr'] = 'French';
+$string['lang_hr'] = 'Croatian';
+$string['lang_it'] = 'Italian';
+$string['lang_ja'] = 'Japanese';
+$string['lang_nl'] = 'Dutch';
+$string['lang_pl'] = 'Polish';
 $string['lang_pt'] = 'Portuguese';
+$string['lang_ru'] = 'Russian';
 $string['lang_sk'] = 'Slovak';
 $string['lang_sr'] = 'Serbian';
 $string['lang_sr_cr'] = 'Serbian (Cyrillic)';
+$string['lang_sr_lt'] = 'Serbian (Latin)';
+$string['lang_zh'] = 'Chinese';
 $string['notallowed'] = 'This tool is only available to teachers and managers in this course.';
 $string['openpromptbuilder'] = 'Open AI Prompt Builder';
 $string['option_lessonplan'] = 'Lesson plan';
@@ -117,7 +147,13 @@ $string['option_teacher'] = 'Teacher-facing';
 $string['option_worksheet'] = 'Worksheet / activities';
 $string['placeholder_agerange'] = 'e.g., 15 or 10–12';
 $string['pluginname'] = 'AI Prompt Generator';
-$string['privacy:metadata'] = 'The AI Prompt Generator plugin does not store personal data.';
+$string['privacy:metadata:claude'] = 'Prompts are sent to Anthropic (Claude) when a teacher chooses this provider.';
+$string['privacy:metadata:custom'] = 'Prompts are sent to the custom OpenAI-compatible service configured by the administrator when a teacher chooses this provider.';
+$string['privacy:metadata:deepseek'] = 'Prompts are sent to DeepSeek when a teacher chooses this provider.';
+$string['privacy:metadata:gemini'] = 'Prompts are sent to Google (Gemini) when a teacher chooses this provider.';
+$string['privacy:metadata:ollama'] = 'Prompts are sent to the Ollama server configured by the administrator when a teacher chooses this provider.';
+$string['privacy:metadata:openai'] = 'Prompts are sent to OpenAI when a teacher chooses this provider.';
+$string['privacy:metadata:prompt'] = 'The prompt the teacher builds and sends. It can contain course, topic, lesson and outcome names and any text the teacher adds. No user identifiers are sent.';
 $string['prompt_age'] = 'Student Age: {$a} years old';
 $string['prompt_audience'] = 'Target Audience: {$a}';
 $string['prompt_class_type'] = 'Class Type: {$a}';
@@ -133,12 +169,22 @@ $string['prompt_prefix'] = 'You are an expert instructional designer helping a t
 $string['prompt_purpose'] = 'Purpose: {$a}';
 $string['prompt_subject'] = 'Subject: {$a}';
 $string['prompt_topic'] = 'Topic: {$a}';
+$string['provider_custom'] = 'Custom API';
+$string['provider_notconfigured'] = '{$a} (not configured)';
+$string['purpose_activity'] = 'Activity design';
+$string['purpose_explanation'] = 'Explanation';
+$string['purpose_lessonplan'] = 'Lesson plan';
+$string['purpose_project'] = 'Project outline';
+$string['purpose_quiz'] = 'Quiz/Assessment';
+$string['purpose_rubric'] = 'Rubric';
+$string['purpose_summary'] = 'Summary';
+$string['purpose_syllabus'] = 'Syllabus';
 $string['setting_apikey'] = 'OpenAI API key';
 $string['setting_apikey_desc'] = 'API key for OpenAI. Stored in Moodle configuration.';
 $string['setting_claude_apikey'] = 'Claude API key';
 $string['setting_claude_apikey_desc'] = 'API key for Anthropic Claude. Stored in Moodle configuration.';
 $string['setting_claude_model'] = 'Claude model';
-$string['setting_claude_model_desc'] = 'Model to use for Claude (e.g. claude-3-5-sonnet-20240620, claude-3-haiku-20240307).';
+$string['setting_claude_model_desc'] = 'Model to use for Claude (e.g. claude-opus-5-5, claude-sonnet-5-5, claude-haiku-5-5). Default: claude-opus-5-5. The temperature setting is not sent to Claude, because current Claude models do not accept it.';
 $string['setting_custom_apikey'] = 'Custom API key (optional)';
 $string['setting_custom_apikey_desc'] = 'API key for the custom endpoint. Leave empty if not required.';
 $string['setting_custom_endpoint'] = 'Custom API endpoint';
@@ -153,14 +199,11 @@ $string['setting_deepseek_model_desc'] = 'Model to use for DeepSeek (e.g. deepse
 $string['setting_gemini_apikey'] = 'Gemini API key';
 $string['setting_gemini_apikey_desc'] = 'API key for Google Gemini. Stored in Moodle configuration.';
 $string['setting_gemini_model'] = 'Gemini model';
-$string['setting_gemini_model_desc'] = 'Model to use for Gemini (e.g. gemini-1.5-flash, gemini-1.5-pro).';
+$string['setting_gemini_model_desc'] = 'Model to use for Gemini (e.g. gemini-3.8-flash). Default: gemini-3.8-flash.';
 $string['setting_max_tokens'] = 'Max tokens';
-$string['setting_max_tokens_desc'] =
-    'Maximum number of tokens (words/characters) in the AI response. ' .
-    'Default: 1024. Higher values allow longer responses but cost more. ' .
-    'Note: for Gemini this controls maxOutputTokens; for Ollama it controls num_predict.';
+$string['setting_max_tokens_desc'] = 'Maximum number of tokens (words/characters) in the AI response. Default: 1024. Higher values allow longer responses but cost more. For Gemini this controls maxOutputTokens; for Ollama it is used when the Ollama max tokens setting is empty. Models that reason before they answer (Claude, Gemini, GPT-5 and o-series) get at least 16000, because the reasoning counts towards the limit.';
 $string['setting_model'] = 'OpenAI model';
-$string['setting_model_desc'] = 'Chat completion model to use when sending the prompt to ChatGPT. Default is gpt-3.5-turbo.';
+$string['setting_model_desc'] = 'Model to use for OpenAI (e.g. gpt-5-mini, gpt-5, gpt-4.1-mini). Default: gpt-5-mini. GPT-5 and o-series models do not accept the temperature setting, so it is not sent to them.';
 $string['setting_ollama_endpoint'] = 'Ollama endpoint';
 $string['setting_ollama_endpoint_desc'] = 'Base URL of the local Ollama server (e.g. http://localhost:11434).';
 $string['setting_ollama_model'] = 'Ollama model';
@@ -178,8 +221,7 @@ $string['setting_system_prompt_desc'] =
     'Custom instruction sent to the AI before every request (applies to all providers). ' .
     'Leave empty to use the built-in default: "You are a helpful assistant." Increase for large outputs.';
 $string['setting_temperature'] = 'Temperature';
-$string['setting_temperature_desc'] =
-    'Controls randomness of AI responses (0.0 = deterministic, 2.0 = very creative). Default: 0.7.';
+$string['setting_temperature_desc'] = 'Controls randomness of AI responses (0.0 = deterministic, 2.0 = very creative). Default: 0.7. Not sent to Claude and to GPT-5/o-series models, which accept only their default.';
 $string['setting_templates'] = 'Predefined templates (JSON)';
 $string['setting_templates_desc'] = 'A JSON array of templates. Each template should be an object with "title" and "prompt". If empty, built-in defaults are used.<br><br><b>Available placeholders:</b> {subject}, {topic}, {lesson}, {audience}, {outcomes}, {style}, {purpose}, {language}.<br><br><b>Example 1 (Simple):</b><br><pre>[
   {
@@ -207,6 +249,23 @@ $string['status_started'] = 'Started';
 $string['status_streaming'] = 'Streaming...';
 $string['status_timeout'] = 'Timeout (incomplete)';
 $string['system_role'] = 'You are a helpful assistant.';
+$string['template_bloom_prompt'] = 'Create a set of 5 questions based on Bloom\'s Taxonomy for:
+Topic: {topic}
+Audience: {audience}
+Outcomes: {outcomes}';
+$string['template_bloom_title'] = 'Bloom\'s Taxonomy Questions';
+$string['template_lessonplan_prompt'] = 'Generate a structured lesson plan for a 45-minute session.
+Subject: {subject}
+Topic: {topic}
+Pedagogical Style: {style}
+Outcomes: {outcomes}';
+$string['template_lessonplan_title'] = 'Lesson Plan Draft';
+$string['template_socratic_prompt'] = 'You are a Socratic tutor. Help the user understand {topic} by asking guiding questions.
+Current context: {subject}';
+$string['template_socratic_title'] = 'Socratic Tutor';
+$string['template_summary_prompt'] = 'Provide a concise summary of the key concepts for {topic},
+tailored for students in the age range: {audience}.';
+$string['template_summary_title'] = 'Executive Summary';
 $string['tooltip_editprompt'] = 'Edit the generated prompt before sending';
 $string['tooltip_provider_not_configured'] = 'No AI provider is configured.';
 $string['view_html'] = 'HTML';

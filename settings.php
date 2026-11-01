@@ -82,7 +82,7 @@ if ($ADMIN->fulltree) {
         'tiny_aipromptgen/openai_model',
         get_string('setting_model', 'tiny_aipromptgen'),
         get_string('setting_model_desc', 'tiny_aipromptgen'),
-        'gpt-4o-mini',
+        \tiny_aipromptgen\ai_client::DEFAULT_MODELS['openai'],
         PARAM_TEXT
     ));
 
@@ -99,7 +99,7 @@ if ($ADMIN->fulltree) {
         'tiny_aipromptgen/gemini_model',
         get_string('setting_gemini_model', 'tiny_aipromptgen'),
         get_string('setting_gemini_model_desc', 'tiny_aipromptgen'),
-        'gemini-1.5-flash',
+        \tiny_aipromptgen\ai_client::DEFAULT_MODELS['gemini'],
         PARAM_TEXT
     ));
 
@@ -116,7 +116,7 @@ if ($ADMIN->fulltree) {
         'tiny_aipromptgen/claude_model',
         get_string('setting_claude_model', 'tiny_aipromptgen'),
         get_string('setting_claude_model_desc', 'tiny_aipromptgen'),
-        'claude-3-5-sonnet-20240620',
+        \tiny_aipromptgen\ai_client::DEFAULT_MODELS['claude'],
         PARAM_TEXT
     ));
 
@@ -133,7 +133,7 @@ if ($ADMIN->fulltree) {
         'tiny_aipromptgen/deepseek_model',
         get_string('setting_deepseek_model', 'tiny_aipromptgen'),
         get_string('setting_deepseek_model_desc', 'tiny_aipromptgen'),
-        'deepseek-chat',
+        \tiny_aipromptgen\ai_client::DEFAULT_MODELS['deepseek'],
         PARAM_TEXT
     ));
 
@@ -177,7 +177,7 @@ if ($ADMIN->fulltree) {
         'tiny_aipromptgen/ollama_model',
         get_string('setting_ollama_model', 'tiny_aipromptgen'),
         get_string('setting_ollama_model_desc', 'tiny_aipromptgen'),
-        'llama3',
+        \tiny_aipromptgen\ai_client::DEFAULT_MODELS['ollama'],
         PARAM_TEXT // Allow dots/colons.
     ));
 

@@ -12,14 +12,14 @@ https://moodle.org/plugins/tiny_aipromptgen
 
 - **Standalone Guided Builder**: Easily construct prompts by selecting subjects, topics, learning outcomes, and more.
 - **AI Response Integration**:
-    - **OpenAI**: Connect to GPT-3.5/4/4o models via API key.
-    - **Google Gemini**: Support for Gemini 1.5 Pro and Flash models.
-    - **Anthropic Claude**: Support for Claude 3.5 Sonnet and Haiku models.
+    - **OpenAI**: Connect to GPT-5 and GPT-4.1 models via API key.
+    - **Google Gemini**: Support for current Gemini Flash and Pro models.
+    - **Anthropic Claude**: Support for Claude Opus, Sonnet and Haiku models.
     - **DeepSeek**: Support for DeepSeek Chat and Reasoner models.
     - **Ollama**: Connect to local LLMs (like Llama 3, Phi-3, Mistral) for private, zero-cost generation.
     - **Custom API**: Connect any OpenAI-compatible endpoint (LM Studio, Groq, OpenRouter, vLLM, etc.).
-- **Real-time Streaming**: Watch AI responses appear in real-time as they are generated.
-- **Rate Limiting**: Prevent abuse by limiting requests per user per hour.
+- **Real-time Streaming**: Watch AI responses appear in real-time as they are generated (all providers).
+- **Rate Limiting**: Prevent abuse by limiting requests per user per hour (counted per user, not per session).
 - **Quick Templates**: One-click pedagogical prompt structures for common teaching tasks.
 - **Dynamic Tooltips**: Instant visibility of active AI provider/model on the toolbar.
 - **Selection Persistence**: Remembers your preferred AI provider across sessions.
@@ -31,13 +31,16 @@ https://moodle.org/plugins/tiny_aipromptgen
 - **Admin Tuning Controls** (applies to all providers):
     - **System Prompt**: Define the AI's role and persona site-wide.
     - **Temperature**: Control response creativity (0.0 = precise, 2.0 = very creative). Default: 0.7.
-    - **Max Tokens**: Limit response length. Default: 1024.
+      Not sent to Claude and to GPT-5/o-series models, which accept only their default.
+    - **Max Tokens**: Limit response length. Default: 1024. Models that reason before they answer
+      (Claude, Gemini, GPT-5/o-series) get at least 16000, because the reasoning counts towards the limit.
 - **Response Modes**: View and copy AI responses in multiple formats:
     - **RAW**: Exact AI output.
     - **TEXT**: Cleaned up plain text.
     - **HTML**: Rendered formatting.
     - **HTML CODE**: The underlying HTML source.
-- **Privacy Compliant**: Implements Moodle Privacy API (null provider - no personal data stored).
+- **Privacy Compliant**: Implements the Moodle Privacy API. No personal data is stored in Moodle;
+  the external AI services that receive the prompts are declared in the privacy metadata.
 
 ## Related Plugins
  
@@ -55,6 +58,8 @@ If you prefer a side-block interface instead of an editor-integrated tool, check
 | Moodle 4.5     | ✅        |
 | Moodle 5.0     | ✅        |
 | Moodle 5.1     | ✅        |
+| Moodle 5.2     | ✅        |
+| Moodle 5.3     | ✅        |
 
 **Minimum PHP Version**: 8.1
 
@@ -70,17 +75,17 @@ If you prefer a side-block interface instead of an editor-integrated tool, check
 ### OpenAI Setup
 1. Obtain an API key from [OpenAI](https://platform.openai.com/api-keys).
 2. Enter your API key in the plugin settings.
-3. Choose your preferred model (default: `gpt-4o-mini`).
+3. Choose your preferred model (default: `gpt-5-mini`).
 
 ### Google Gemini Setup
 1. Obtain an API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
 2. Enter your API key in the plugin settings.
-3. Choose your preferred model (default: `gemini-1.5-flash`).
+3. Choose your preferred model (default: `gemini-3.8-flash`).
 
 ### Anthropic Claude Setup
 1. Obtain an API key from [Anthropic Console](https://console.anthropic.com/).
 2. Enter your API key in the plugin settings.
-3. Choose your preferred model (default: `claude-3-5-sonnet-20240620`).
+3. Choose your preferred model (default: `claude-opus-5-5`; `claude-sonnet-5-5` and `claude-haiku-5-5` cost less).
 
 ### Ollama Setup (Local AI)
 1. Install [Ollama](https://ollama.ai/) on your server.

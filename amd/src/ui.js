@@ -217,7 +217,7 @@ define(['core/str'], function(Str) {
                         var provider = select.value;
                         var form = document.getElementById('ai4t-send-form');
 
-                        if (['ollama', 'gemini', 'claude', 'deepseek', 'custom'].includes(provider)) {
+                        if (['openai', 'ollama', 'gemini', 'claude', 'deepseek', 'custom'].includes(provider)) {
                             e.preventDefault();
                             var resp = document.getElementById('ai4t-airesponse-body') ||
                                        document.getElementById('ai4t-airesponse');

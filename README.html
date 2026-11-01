@@ -32,12 +32,12 @@
     selecting subjects, topics, learning outcomes, and more.</li>
   <li><strong>AI Response Integration</strong>:
     <ul>
-      <li><strong>OpenAI</strong>: Connect to GPT-3.5/4/4o models via API key.
+      <li><strong>OpenAI</strong>: Connect to GPT-5 and GPT-4.1 models via API key.
       </li>
-      <li><strong>Google Gemini</strong>: Support for Gemini 1.5 Pro and Flash
+      <li><strong>Google Gemini</strong>: Support for current Gemini Flash and Pro
         models.
       </li>
-      <li><strong>Anthropic Claude</strong>: Support for Claude 3.5 Sonnet and
+      <li><strong>Anthropic Claude</strong>: Support for Claude Opus, Sonnet and
         Haiku models.
       </li>
       <li><strong>DeepSeek</strong>: Support for DeepSeek Chat and Reasoner
@@ -64,8 +64,9 @@
       <li><strong>HTML CODE</strong>: The underlying HTML source.</li>
     </ul>
   </li>
-  <li><strong>Privacy Compliant</strong>: Implements Moodle Privacy API (null
-    provider - no personal data stored).</li>
+  <li><strong>Privacy Compliant</strong>: Implements the Moodle Privacy API. No personal
+    data is stored in Moodle; the external AI services that receive the prompts are declared in the
+    privacy metadata.</li>
 </ul>
 <h2>Admin Tuning Controls</h2>
 <ul>
@@ -118,6 +119,14 @@
       <td>Moodle 5.1</td>
       <td>✅</td>
     </tr>
+    <tr>
+      <td>Moodle 5.2</td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td>Moodle 5.3</td>
+      <td>✅</td>
+    </tr>
   </tbody>
 </table>
 <p><strong>Minimum PHP Version</strong>: 8.1</p>
@@ -138,14 +147,14 @@
   <li>Obtain an API key from <a
       href="https://platform.openai.com/api-keys">OpenAI</a>.</li>
   <li>Enter your API key in the plugin settings.</li>
-  <li>Choose your preferred model (default: <code>gpt-4o-mini</code>).</li>
+  <li>Choose your preferred model (default: <code>gpt-5-mini</code>).</li>
 </ol>
 <h3>Google Gemini Setup</h3>
 <ol>
   <li>Obtain an API key from <a
       href="https://aistudio.google.com/app/apikey">Google AI Studio</a>.</li>
   <li>Enter your API key in the plugin settings.</li>
-  <li>Choose your preferred model (default: <code>gemini-1.5-flash</code>).</li>
+  <li>Choose your preferred model (default: <code>gemini-3.8-flash</code>).</li>
 </ol>
 <h3>Anthropic Claude Setup</h3>
 <ol>
@@ -153,7 +162,7 @@
       href="https://console.anthropic.com/">Anthropic Console</a>.</li>
   <li>Enter your API key in the plugin settings.</li>
   <li>Choose your preferred model
-    (default: <code>claude-3-5-sonnet-20240620</code>).</li>
+    (default: <code>claude-opus-5-5</code>).</li>
 </ol>
 <h3>Ollama Setup (Local AI)</h3>
 <ol>

@@ -24,22 +24,90 @@
 
 namespace tiny_aipromptgen\privacy;
 
-use core_privacy\local\metadata\null_provider;
+use core_privacy\local\metadata\collection;
+use core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\approved_userlist;
+use core_privacy\local\request\contextlist;
+use core_privacy\local\request\userlist;
 
 /**
  * Privacy Subsystem implementation for tiny_aipromptgen.
+ *
+ * The plugin stores no personal data in Moodle, but the prompts a teacher sends go to the
+ * AI provider the teacher chooses.
  *
  * @package    tiny_aipromptgen
  * @copyright  2025 AI4Teachers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements null_provider {
+class provider implements
+    \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\core_userlist_provider,
+    \core_privacy\local\request\plugin\provider {
     /**
-     * Get the language string identifier with the summary of the reason why the plugin did not store any data.
+     * Describe the data sent to external AI services.
      *
-     * @return string
+     * @param collection $collection The collection to add metadata to.
+     * @return collection
      */
-    public static function get_reason(): string {
-        return 'privacy:metadata';
+    public static function get_metadata(collection $collection): collection {
+        foreach (\tiny_aipromptgen\ai_client::PROVIDERS as $provider) {
+            $collection->add_external_location_link(
+                $provider,
+                ['prompt' => 'privacy:metadata:prompt'],
+                'privacy:metadata:' . $provider
+            );
+        }
+        return $collection;
+    }
+
+    /**
+     * No user data is stored in Moodle, so there are no contexts.
+     *
+     * @param int $userid The user ID.
+     * @return contextlist
+     */
+    public static function get_contexts_for_userid(int $userid): contextlist {
+        return new contextlist();
+    }
+
+    /**
+     * No user data is stored in Moodle, so there are no users.
+     *
+     * @param userlist $userlist The userlist to fill.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+    }
+
+    /**
+     * No user data is stored in Moodle, so there is nothing to export.
+     *
+     * @param approved_contextlist $contextlist The approved contexts.
+     */
+    public static function export_user_data(approved_contextlist $contextlist) {
+    }
+
+    /**
+     * No user data is stored in Moodle, so there is nothing to delete.
+     *
+     * @param \context $context The context.
+     */
+    public static function delete_data_for_all_users_in_context(\context $context) {
+    }
+
+    /**
+     * No user data is stored in Moodle, so there is nothing to delete.
+     *
+     * @param approved_contextlist $contextlist The approved contexts.
+     */
+    public static function delete_data_for_user(approved_contextlist $contextlist) {
+    }
+
+    /**
+     * No user data is stored in Moodle, so there is nothing to delete.
+     *
+     * @param approved_userlist $userlist The approved users.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
     }
 }

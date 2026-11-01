@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0] - 2026-11-01
+### Security
+- **XSS in Markdown rendering**: Links and images in AI responses accept only `http(s)` (and `mailto:` for links) URLs,
+  and quotes are escaped, so a response can no longer inject `javascript:` links or event handler attributes.
+- **CSRF on the streaming endpoint**: `stream.php` accepts only POST requests with a valid sesskey, so a plain link
+  can no longer trigger paid AI requests.
+- **Gemini API key**: Sent in the `x-goog-api-key` header instead of the URL, so it cannot leak into error messages or logs.
+- **Moodle curl security**: Applies to the cloud providers again; only the admin-configured Ollama and Custom endpoints
+  bypass it. SSL verification is turned off only for localhost and private IP addresses.
+- **Rate limit**: Counted per user in the Moodle application cache instead of the session, so a new login no longer resets it.
+
+### Added
+- **OpenAI streaming**: OpenAI responses now stream like the other providers.
+- **Privacy metadata**: The external AI services that receive prompts are declared in the privacy provider.
+
+### Changed
+- **One AI client for all providers**: `ai_client` builds every request; streaming and non-streaming use the same model,
+  system prompt and limits. `stream.php` only checks the request and streams the response.
+- **Default models**: `gpt-5-mini`, `gemini-3.8-flash`, `claude-opus-5-5` (the old defaults were retired by the providers).
+- **Claude and reasoning models**: `temperature` is not sent to Claude and to GPT-5/o-series models; models that reason
+  before they answer get at least 16000 output tokens; Claude thinking blocks are not shown in the response.
+- **Language strings**: Error messages, provider labels, purposes, audiences, class types, language names and the default
+  prompt templates are now language strings.
+- **Supported versions**: Requires Moodle 4.1 (TinyMCE plugins do not exist in 4.0); tested on Moodle 4.5 to 5.3.
+  CI runs each Moodle branch with a PHP version it supports, including 5.2 and 5.3.
+
+### Fixed
+- **Ollama and Custom without streaming**: Requests to localhost or private network endpoints were blocked by Moodle's curl security.
+- **Gemini streaming**: Responses that contained `{` or `}` (for example code) were split incorrectly.
+- **Ollama streaming**: Now uses the system prompt, temperature and max tokens settings, and sends `[DONE]` only once.
+- **API errors in streaming**: An HTTP error (for example an invalid API key) is shown as an error instead of an empty response.
+- **Cancel button**: Returns to the course instead of printing a `window.close()` script.
+
 ## [1.9] - 2026-03-05
 ### Fixed
 - **ESLint Warnings (Nested Promises)**: Refactored streaming loop in `amd/src/stream.js` from chained `.then()` / recursive `pump()` pattern to `async/await` with a `while (!result.done)` loop, eliminating `promise/no-nesting` and `no-constant-condition` ESLint warnings.

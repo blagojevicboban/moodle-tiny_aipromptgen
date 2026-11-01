@@ -71,6 +71,29 @@ define([], function() {
     };
 
     /**
+     * Escape HTML special characters, including quotes used in attributes.
+     *
+     * @param {string} text
+     * @returns {string}
+     */
+    const escapeHtml = function(text) {
+        return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    };
+
+    /**
+     * Check that a link or image URL uses a safe scheme (blocks javascript:, data:, vbscript: and similar).
+     *
+     * @param {string} url Already HTML-escaped URL
+     * @param {boolean} allowmailto Whether mailto: links are allowed
+     * @returns {boolean}
+     */
+    const isSafeUrl = function(url, allowmailto) {
+        const pattern = allowmailto ? /^(https?:\/\/|mailto:)/i : /^https?:\/\//i;
+        return pattern.test(url.trim());
+    };
+
+    /**
      * Process inline elements like images, links, bold, italic.
      *
      * @param {string} text
@@ -81,8 +104,18 @@ define([], function() {
             return '';
         }
         return text
-            .replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" style="max-width:100%;height:auto;">')
-            .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+            .replace(/!\[(.*?)\]\((.*?)\)/g, function(match, alt, src) {
+                if (!isSafeUrl(src, false)) {
+                    return alt;
+                }
+                return '<img src="' + src.trim() + '" alt="' + alt + '" style="max-width:100%;height:auto;">';
+            })
+            .replace(/\[(.*?)\]\((.*?)\)/g, function(match, label, href) {
+                if (!isSafeUrl(href, true)) {
+                    return label;
+                }
+                return '<a href="' + href.trim() + '" target="_blank" rel="noopener noreferrer">' + label + '</a>';
+            })
             .replace(/\*\*\*\*(.*?)\*\*\*\*/g, '<h3>$1</h3>')
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/\*(.*?)\*/g, '<em>$1</em>')
@@ -239,7 +272,7 @@ define([], function() {
         if (!md) {
             return '';
         }
-        const text = autofixMarkdown(md).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const text = escapeHtml(autofixMarkdown(md));
         const lines = text.split(/\r?\n/);
         const state = {
             html: '',
