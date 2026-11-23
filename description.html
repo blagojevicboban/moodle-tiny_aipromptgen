@@ -1,0 +1,54 @@
+<div>
+  <p><strong>Tiny AI Prompt Generator: Teaching Prompts from the Editor</strong></p>
+  <p><em>A button in the TinyMCE editor opens a guided builder for teaching prompts. It uses the data of the course and sends the prompt to the AI provider of your choice, with the answer streamed back inside Moodle.</em></p>
+  <div>
+    <a href="https://github.com/blagojevicboban/moodle-tiny_aipromptgen/actions/workflows/ci.yml" target="_blank" rel="noreferrer noopener"><img src="https://github.com/blagojevicboban/moodle-tiny_aipromptgen/actions/workflows/ci.yml/badge.svg" alt="Moodle Plugin CI"></a>
+    <a href="https://moodle.org" target="_blank" rel="noreferrer noopener"><img src="https://img.shields.io/badge/Moodle-4.1%20to%205.3-orange.svg" alt="Moodle 4.1 to 5.3"></a>
+    <a href="https://github.com/blagojevicboban/moodle-tiny_aipromptgen" target="_blank" rel="noreferrer noopener"><img src="https://img.shields.io/badge/License-GPL%20v3-blue.svg" alt="License GPL v3"></a>
+  </div>
+
+  <hr>
+  <p><strong>What's New in v2.0.0</strong></p>
+  <ul>
+    <li><strong>Security release:</strong> the streaming endpoint accepts only requests with a valid session key, links in AI responses are checked, the Gemini API key is no longer sent in the URL, Moodle's curl security applies to the cloud providers, and the rate limit is counted per user.</li>
+    <li><strong>Streaming for every provider:</strong> OpenAI responses stream too, and one AI client builds every request with the same model, system prompt and limits.</li>
+    <li><strong>Current AI models:</strong> new defaults for OpenAI, Gemini and Claude, and correct handling of models that reason before they answer.</li>
+    <li><strong>Fixes:</strong> Ollama and custom endpoints on the local network, Gemini responses with code, and API errors shown as errors.</li>
+  </ul>
+
+  <hr>
+  <p><strong>Core features</strong></p>
+  <ul>
+    <li><strong>Guided builder:</strong> subject, topic, lesson, student age, class type, audience, language and learning outcomes; the prompt updates as you choose.</li>
+    <li><strong>Course-aware:</strong> Browse dialogs insert the sections and activities of the course, learning plan competencies and gradebook outcomes.</li>
+    <li><strong>Several AI providers:</strong> OpenAI, Google Gemini, Anthropic Claude, DeepSeek, any OpenAI-compatible API (LM Studio, Groq, OpenRouter, vLLM) and Ollama for local models on your own server.</li>
+    <li><strong>Streaming answers:</strong> the response appears while it is generated.</li>
+    <li><strong>Quick templates:</strong> ready-made teaching prompts, and administrators add their own JSON templates with placeholders such as {subject}, {topic} and {outcomes}.</li>
+    <li><strong>Response views:</strong> raw output, plain text, rendered HTML or HTML code, each ready to copy.</li>
+    <li><strong>Administrator controls:</strong> system prompt, temperature, maximum length and a rate limit of requests per user and hour; the toolbar tooltip names the active provider and model.</li>
+  </ul>
+
+  <hr>
+  <p><strong>The AI prompt plugins</strong></p>
+  <ul>
+    <li><strong><a href="https://marketplace.moodle.com/plugins/tiny_aipromptgen" target="_blank" rel="noreferrer noopener">Tiny AI Prompt Generator</a></strong> (this plugin): the prompt builder as a button in the TinyMCE editor.</li>
+    <li><strong><a href="https://marketplace.moodle.com/plugins/block_aipromptgen" target="_blank" rel="noreferrer noopener">AI tools for teachers - prompt generator</a></strong>: the same builder as a course block.</li>
+  </ul>
+
+  <hr>
+  <p><strong>Requirements</strong></p>
+  <ul>
+    <li><strong>Moodle:</strong> 4.1 to 5.3 with the TinyMCE editor, PHP 8.1 or newer.</li>
+    <li><strong>An AI provider:</strong> an API key of OpenAI, Gemini, Claude, DeepSeek or an OpenAI-compatible service, or an Ollama server. Set it in Site administration, Plugins, Text editors, TinyMCE editor, AI Prompt Generator.</li>
+  </ul>
+
+  <hr>
+  <p><strong>Privacy</strong></p>
+  <p>The plugin stores no personal data in Moodle. When a teacher sends a prompt, the prompt is sent to the AI provider the administrator set up (an outside service, or your own Ollama server). The external services are declared in the Moodle Privacy API.</p>
+
+  <hr>
+  <p>Developed by <strong>Boban Blagojevi&#263;</strong> in the Erasmus+ project AI tools for VET schools (KA220-VET). Language: English.<br>
+    Source, documentation and issue tracker:
+    <a href="https://github.com/blagojevicboban/moodle-tiny_aipromptgen" target="_blank" rel="noreferrer noopener">github.com/blagojevicboban/moodle-tiny_aipromptgen</a><br>
+    Licensed under the GNU GPL v3 or later.</p>
+</div>
